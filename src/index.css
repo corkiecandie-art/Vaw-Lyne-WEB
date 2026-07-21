@@ -1,0 +1,233 @@
+@import "tailwindcss";
+
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap');
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Outfit", sans-serif;
+  --font-serif: "Cormorant Garamond", serif;
+  
+  /* Brand color definitions (Vaw Lyne Brand Formula) */
+  --color-midnight-black: #07070B;
+  --color-vaw-pink: #FF4FA3;
+  --color-rose-mist: #FFC1DC;
+  --color-velvet-rose: #D92F7A;
+  --color-rose-gold: #F6C7B6;
+  --color-lavender-aura: #C084FC;
+  --color-soft-gray: #B8B8C2;
+  --color-glass-white: rgba(255, 255, 255, 0.08);
+
+  /* Fallbacks for existing gold utility references mapped to Rose Pinks/Golds */
+  --color-gold-50: #FFC1DC;   /* Rose Mist */
+  --color-gold-100: #F6C7B6;  /* Rose Gold */
+  --color-gold-200: #FFC1DC;  /* Rose Mist */
+  --color-gold-300: #FF8DC7;  /* Light Pink accent */
+  --color-gold-400: #FF4FA3;  /* Vaw Pink */
+  --color-gold-500: #FF4FA3;  /* Vaw Pink */
+  --color-gold-600: #D92F7A;  /* Velvet Rose */
+  --color-gold-700: #D92F7A;
+  --color-gold-800: #B82262;
+  --color-gold-900: #6B0A33;
+  --color-gold-950: #42041D;
+}
+
+/* Custom background animations & utilities */
+@keyframes slow-pulse {
+  0%, 100% { opacity: 0.2; transform: scale(1); }
+  50% { opacity: 0.45; transform: scale(1.18); }
+}
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.animate-slow-pulse {
+  animation: slow-pulse 8s infinite ease-in-out;
+}
+
+.animate-spin-slow {
+  animation: spin-slow 20s infinite linear;
+}
+
+/* Custom glassmorphism & luxury design classes */
+.glass-panel {
+  background: rgba(15, 15, 22, 0.75);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-panel-hover:hover {
+  background: rgba(22, 15, 25, 0.85);
+  border-color: rgba(255, 79, 163, 0.3);
+  box-shadow: 0 12px 40px rgba(255, 79, 163, 0.12);
+  transform: translateY(-2px);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-border {
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.pink-glow {
+  box-shadow: 0 0 80px rgba(255, 79, 163, 0.45);
+}
+
+.pink-glow-subtle {
+  box-shadow: 0 0 40px rgba(255, 79, 163, 0.15);
+}
+
+.shadow-luxury {
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
+}
+
+.bg-button-gradient {
+  background: linear-gradient(135deg, #FF4FA3, #D92F7A);
+}
+
+.bg-button-gradient-hover {
+  background: linear-gradient(135deg, #FF66B3, #E63D8C);
+}
+
+.bg-album-glass-gradient {
+  background: linear-gradient(135deg, rgba(255, 79, 163, 0.15), rgba(192, 132, 252, 0.15));
+}
+
+.bg-hero-aurora-gradient {
+  background: linear-gradient(135deg, #FF4FA3, #FF8DC7, #C084FC, #FFFFFF);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #07070B;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 79, 163, 0.2);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #FF4FA3;
+}
+
+/* ==========================================
+   VAW LYNE INNER CIRCLE
+========================================== */
+
+.fanclub-section {
+  padding: 120px 6%;
+  display: flex;
+  justify-content: center;
+}
+
+.fanclub-card {
+  position: relative;
+  width: min(900px, 100%);
+  padding: 70px;
+  border-radius: 42px;
+  background: rgba(255, 255, 255, .06);
+  border: 1px solid rgba(255, 255, 255, .12);
+  backdrop-filter: blur(35px);
+  -webkit-backdrop-filter: blur(35px);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, .45);
+  overflow: hidden;
+  text-align: center;
+}
+
+.fanclub-glow {
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  top: -250px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: radial-gradient(circle, rgba(255, 78, 205, .35), transparent 70%);
+  filter: blur(60px);
+}
+
+.fanclub-tag {
+  display: inline-block;
+  padding: 10px 22px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .08);
+  color: #ff4ecd;
+  letter-spacing: 2px;
+  font-size: 13px;
+  margin-bottom: 25px;
+}
+
+.fanclub-card h2 {
+  font-size: clamp(45px, 6vw, 75px);
+  line-height: 1;
+  letter-spacing: -3px;
+  margin-bottom: 25px;
+}
+
+.fanclub-card h2 span {
+  display: block;
+  background: linear-gradient(90deg, #ff4ecd, #7c4dff, #29d8ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.fanclub-card p {
+  max-width: 650px;
+  margin: auto;
+  font-size: 19px;
+  line-height: 1.8;
+  color: rgba(255, 255, 255, .7);
+  margin-bottom: 40px;
+}
+
+.fanclub-form {
+  display: grid;
+  gap: 18px;
+  max-width: 500px;
+  margin: auto;
+}
+
+.fanclub-form input,
+.fanclub-form select {
+  padding: 18px 22px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, .15);
+  background: rgba(255, 255, 255, .08);
+  color: white;
+  font-size: 16px;
+  outline: none;
+  backdrop-filter: blur(20px);
+}
+
+.fanclub-form select option {
+  color: black;
+}
+
+.fanclub-form button {
+  padding: 18px;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  font-size: 17px;
+  font-weight: 700;
+  color: white;
+  background: linear-gradient(135deg, #ff4ecd, #7c4dff, #29d8ff);
+  box-shadow: 0 15px 40px rgba(255, 78, 205, .35);
+  transition: .35s;
+}
+
+.fanclub-form button:hover {
+  transform: translateY(-4px);
+}
+
+.fanclub-card small {
+  display: block;
+  margin-top: 35px;
+  color: rgba(255, 255, 255, .45);
+}
+

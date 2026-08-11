@@ -2,30 +2,62 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap');
 
+:root {
+  --vaw-pink: #FF4FA3;
+  --rose-mist: #FFC1DC;
+  --velvet-rose: #D92F7A;
+  --rose-gold: #F6C7B6;
+  --lavender-aura: #C084FC;
+  --midnight-black: #07070B;
+  
+  --btn-grad-from: #FF4FA3;
+  --btn-grad-to: #D92F7A;
+  --btn-grad-hover-from: #FF66B3;
+  --btn-grad-hover-to: #E63D8C;
+  --hover-border-color: rgba(255, 79, 163, 0.3);
+  --glow-shadow: rgba(255, 79, 163, 0.45);
+}
+
+[data-theme="midnight"] {
+  --vaw-pink: #38BDF8;
+  --rose-mist: #93C5FD;
+  --velvet-rose: #1D4ED8;
+  --rose-gold: #60A5FA;
+  --lavender-aura: #818CF8;
+  --midnight-black: #050814;
+
+  --btn-grad-from: #38BDF8;
+  --btn-grad-to: #1D4ED8;
+  --btn-grad-hover-from: #60A5FA;
+  --btn-grad-hover-to: #2563EB;
+  --hover-border-color: rgba(56, 189, 248, 0.4);
+  --glow-shadow: rgba(56, 189, 248, 0.45);
+}
+
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Outfit", sans-serif;
   --font-serif: "Cormorant Garamond", serif;
   
-  /* Brand color definitions (Vaw Lyne Brand Formula) */
-  --color-midnight-black: #07070B;
-  --color-vaw-pink: #FF4FA3;
-  --color-rose-mist: #FFC1DC;
-  --color-velvet-rose: #D92F7A;
-  --color-rose-gold: #F6C7B6;
-  --color-lavender-aura: #C084FC;
+  /* Brand color definitions (Dynamic Theme Support) */
+  --color-midnight-black: var(--midnight-black);
+  --color-vaw-pink: var(--vaw-pink);
+  --color-rose-mist: var(--rose-mist);
+  --color-velvet-rose: var(--velvet-rose);
+  --color-rose-gold: var(--rose-gold);
+  --color-lavender-aura: var(--lavender-aura);
   --color-soft-gray: #B8B8C2;
   --color-glass-white: rgba(255, 255, 255, 0.08);
 
   /* Fallbacks for existing gold utility references mapped to Rose Pinks/Golds */
-  --color-gold-50: #FFC1DC;   /* Rose Mist */
-  --color-gold-100: #F6C7B6;  /* Rose Gold */
-  --color-gold-200: #FFC1DC;  /* Rose Mist */
-  --color-gold-300: #FF8DC7;  /* Light Pink accent */
-  --color-gold-400: #FF4FA3;  /* Vaw Pink */
-  --color-gold-500: #FF4FA3;  /* Vaw Pink */
-  --color-gold-600: #D92F7A;  /* Velvet Rose */
-  --color-gold-700: #D92F7A;
+  --color-gold-50: var(--rose-mist);
+  --color-gold-100: var(--rose-gold);
+  --color-gold-200: var(--rose-mist);
+  --color-gold-300: var(--rose-mist);
+  --color-gold-400: var(--vaw-pink);
+  --color-gold-500: var(--vaw-pink);
+  --color-gold-600: var(--velvet-rose);
+  --color-gold-700: var(--velvet-rose);
   --color-gold-800: #B82262;
   --color-gold-900: #6B0A33;
   --color-gold-950: #42041D;
@@ -59,8 +91,8 @@
 
 .glass-panel-hover:hover {
   background: rgba(22, 15, 25, 0.85);
-  border-color: rgba(255, 79, 163, 0.3);
-  box-shadow: 0 12px 40px rgba(255, 79, 163, 0.12);
+  border-color: var(--hover-border-color);
+  box-shadow: 0 12px 40px var(--hover-border-color);
   transform: translateY(-2px);
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -70,11 +102,11 @@
 }
 
 .pink-glow {
-  box-shadow: 0 0 80px rgba(255, 79, 163, 0.45);
+  box-shadow: 0 0 80px var(--glow-shadow);
 }
 
 .pink-glow-subtle {
-  box-shadow: 0 0 40px rgba(255, 79, 163, 0.15);
+  box-shadow: 0 0 40px var(--hover-border-color);
 }
 
 .shadow-luxury {
@@ -82,11 +114,11 @@
 }
 
 .bg-button-gradient {
-  background: linear-gradient(135deg, #FF4FA3, #D92F7A);
+  background: linear-gradient(135deg, var(--btn-grad-from), var(--btn-grad-to));
 }
 
 .bg-button-gradient-hover {
-  background: linear-gradient(135deg, #FF66B3, #E63D8C);
+  background: linear-gradient(135deg, var(--btn-grad-hover-from), var(--btn-grad-hover-to));
 }
 
 .bg-album-glass-gradient {
@@ -114,6 +146,20 @@
 
 ::-webkit-scrollbar-thumb:hover {
   background: #FF4FA3;
+}
+
+/* ==========================================
+   ASSET LOCK & PROTECTION RULES
+========================================== */
+img, video {
+  -webkit-user-drag: none;
+  -khtml-user-drag: none;
+  -moz-user-drag: none;
+  -o-user-drag: none;
+  user-drag: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
 }
 
 /* ==========================================

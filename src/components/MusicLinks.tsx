@@ -28,6 +28,42 @@ export default function MusicLinks({ release, onBackToHome }: MusicLinksProps) {
   const [preSavedList, setPreSavedList] = useState<string[]>([]);
   const [isResolvingLinks, setIsResolvingLinks] = useState(false);
   const [linkData, setLinkData] = useState<OdesliResponse | null>(null);
+  const [timeLeft, setTimeLeft] = useState<{
+    days: number;
+    hours: number;
+    minutes: number;
+    seconds: number;
+    isPast: boolean;
+  }>({ days: 0, hours: 0, minutes: 0, seconds: 0, isPast: true });
+
+  // Countdown timer calculation
+  useEffect(() => {
+    if (!release.releaseDate) {
+      setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0, isPast: true });
+      return;
+    }
+
+    const calculateTimeLeft = () => {
+      const releaseDateTime = new Date(release.releaseDate + 'T00:00:00');
+      const difference = +releaseDateTime - +new Date();
+      if (difference <= 0 || isNaN(difference)) {
+        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0, isPast: true });
+        return;
+      }
+
+      setTimeLeft({
+        days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+        hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+        minutes: Math.floor((difference / 1000 / 60) % 60),
+        seconds: Math.floor((difference / 1000) % 60),
+        isPast: false,
+      });
+    };
+
+    calculateTimeLeft();
+    const interval = setInterval(calculateTimeLeft, 1000);
+    return () => clearInterval(interval);
+  }, [release.releaseDate]);
 
   // Load saved pre-saves from localStorage
   useEffect(() => {
@@ -65,150 +101,192 @@ export default function MusicLinks({ release, onBackToHome }: MusicLinksProps) {
   }, [release]);
 
   const handleCopyLink = () => {
-    const link = `${window.location.origin}/music/${release.id}`;
+    const link = `${window.location.origin}/release/${release.slug || release.id}`;
     navigator.clipboard.writeText(link);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const handlePreSave = (platform: string) => {
+  const handlePreSave = (platform: string, url?: string) => {
     const key = `${release.id}-${platform}`;
-    if (preSavedList.includes(key)) return;
+    if (!preSavedList.includes(key)) {
+      const newList = [...preSavedList, key];
+      setPreSavedList(newList);
+      localStorage.setItem('vaw_lyne_presaved_ids', JSON.stringify(newList));
+    }
+    if (url) {
+      window.open(url, '_blank', 'noopener,noreferrer');
+    }
+  };
 
-    const newList = [...preSavedList, key];
-    setPreSavedList(newList);
-    localStorage.setItem('vaw_lyne_presaved_ids', JSON.stringify(newList));
+  // Resolves a raw URL or generates a clean platform destination link
+  const getResolvedUrl = (platformId: string, rawUrl?: string): string => {
+    if (rawUrl && !rawUrl.includes('placeholder')) {
+      return rawUrl;
+    }
+    const searchTerms = encodeURIComponent(`${release.artist || 'Vaw Lyne'} ${release.title}`);
+    switch (platformId) {
+      case 'spotify':
+        return `https://open.spotify.com/search/${searchTerms}`;
+      case 'appleMusic':
+        return `https://music.apple.com/us/search?term=${searchTerms}`;
+      case 'youtube':
+        return `https://www.youtube.com/results?search_query=${searchTerms}`;
+      case 'youtubeMusic':
+        return `https://music.youtube.com/search?q=${searchTerms}`;
+      case 'amazon':
+        return `https://music.amazon.com/search/${searchTerms}`;
+      case 'deezer':
+        return `https://www.deezer.com/search/${searchTerms}`;
+      case 'tidal':
+        return `https://listen.tidal.com/search?q=${searchTerms}`;
+      case 'boomplay':
+        return `https://www.boomplay.com/search/songs/${searchTerms}`;
+      case 'audiomack':
+        return `https://audiomack.com/search?q=${searchTerms}`;
+      case 'soundcloud':
+        return `https://soundcloud.com/search?q=${searchTerms}`;
+      case 'pandora':
+        return `https://www.pandora.com/search/${searchTerms}`;
+      case 'napster':
+        return `https://napster.com/search?query=${searchTerms}`;
+      case 'anghami':
+        return `https://play.anghami.com/search/${searchTerms}`;
+      case 'audius':
+        return `https://audius.co/trending`;
+      default:
+        return rawUrl || `https://google.com/search?q=${searchTerms}`;
+    }
   };
 
   // Setup our streaming platforms config with custom branding colors, icons & display labels
-  const platforms = [
+  const rawPlatforms = [
     {
       id: 'spotify',
       name: 'Spotify',
-      url: linkData?.linksByPlatform.spotify?.url || release.spotify,
+      rawUrl: linkData?.linksByPlatform.spotify?.url || release.spotify || release.platformLinks?.spotify,
       color: '#1DB954',
       badge: 'POPULAR',
-      actionText: release.status === 'coming_soon' ? 'Pre-Save' : 'Stream',
-      hasUrl: !!(linkData?.linksByPlatform.spotify?.url || release.spotify),
+      actionText: !timeLeft.isPast ? 'Pre-Save' : 'Stream',
     },
     {
       id: 'appleMusic',
       name: 'Apple Music',
-      url: linkData?.linksByPlatform.appleMusic?.url || release.appleMusic,
+      rawUrl: linkData?.linksByPlatform.appleMusic?.url || release.appleMusic || release.platformLinks?.appleMusic,
       color: '#FC3C44',
       badge: 'LOSSLESS',
-      actionText: release.status === 'coming_soon' ? 'Pre-Add' : 'Listen',
-      hasUrl: !!(linkData?.linksByPlatform.appleMusic?.url || release.appleMusic),
+      actionText: !timeLeft.isPast ? 'Pre-Add' : 'Listen',
     },
     {
       id: 'youtubeMusic',
       name: 'YouTube Music',
-      url: linkData?.linksByPlatform.youtubeMusic?.url || release.youtubeMusic,
+      rawUrl: linkData?.linksByPlatform.youtubeMusic?.url || release.youtubeMusic || release.platformLinks?.youtubeMusic,
       color: '#FF0000',
       badge: 'HQ AUDIO',
       actionText: 'Listen',
-      hasUrl: !!(linkData?.linksByPlatform.youtubeMusic?.url || release.youtubeMusic),
     },
     {
       id: 'youtube',
       name: 'YouTube',
-      url: linkData?.linksByPlatform.youtube?.url || release.youtube,
+      rawUrl: linkData?.linksByPlatform.youtube?.url || release.youtube || release.platformLinks?.youtube,
       color: '#FF0000',
       badge: 'VIDEO',
       actionText: 'Watch Video',
-      hasUrl: !!(linkData?.linksByPlatform.youtube?.url || release.youtube),
     },
     {
       id: 'amazon',
       name: 'Amazon Music',
-      url: linkData?.linksByPlatform.amazonMusic?.url || release.amazon,
+      rawUrl: linkData?.linksByPlatform.amazonMusic?.url || release.amazon || release.platformLinks?.amazon,
       color: '#00A8E1',
       badge: '3D AUDIO',
       actionText: 'Stream Now',
-      hasUrl: !!(linkData?.linksByPlatform.amazonMusic?.url || release.amazon),
     },
     {
       id: 'deezer',
       name: 'Deezer',
-      url: linkData?.linksByPlatform.deezer?.url || release.deezer,
+      rawUrl: linkData?.linksByPlatform.deezer?.url || release.deezer || release.platformLinks?.deezer,
       color: '#A238FF',
       badge: 'HI-FI',
-      actionText: release.status === 'coming_soon' ? 'Pre-Save' : 'Stream',
-      hasUrl: !!(linkData?.linksByPlatform.deezer?.url || release.deezer),
+      actionText: !timeLeft.isPast ? 'Pre-Save' : 'Stream',
     },
     {
       id: 'tidal',
       name: 'Tidal',
-      url: linkData?.linksByPlatform.tidal?.url || release.tidal,
+      rawUrl: linkData?.linksByPlatform.tidal?.url || release.tidal || release.platformLinks?.tidal,
       color: '#00FFFF',
       badge: 'MQA HIGH-RES',
       actionText: 'Play',
-      hasUrl: !!(linkData?.linksByPlatform.tidal?.url || release.tidal),
     },
     {
       id: 'boomplay',
       name: 'Boomplay',
-      url: linkData?.linksByPlatform.boomplay?.url || release.boomplay,
+      rawUrl: linkData?.linksByPlatform.boomplay?.url || release.boomplay || release.platformLinks?.boomplay,
       color: '#FFB800',
       badge: '#1 IN AFRICA',
       actionText: 'Play',
-      hasUrl: !!(linkData?.linksByPlatform.boomplay?.url || release.boomplay),
     },
     {
       id: 'audiomack',
       name: 'Audiomack',
-      url: linkData?.linksByPlatform.audiomack?.url || release.audiomack,
+      rawUrl: linkData?.linksByPlatform.audiomack?.url || release.audiomack || release.platformLinks?.audiomack,
       color: '#FFA200',
       badge: 'FREE STREAM',
       actionText: 'Play Free',
-      hasUrl: !!(linkData?.linksByPlatform.audiomack?.url || release.audiomack),
     },
     {
       id: 'soundcloud',
       name: 'SoundCloud',
-      url: linkData?.linksByPlatform.soundcloud?.url || release.soundcloud,
+      rawUrl: (release.id === 'far-away' || release.slug === 'far-away')
+        ? 'https://on.soundcloud.com/T6pGiD4r3HsTHgpkQn'
+        : (linkData?.linksByPlatform.soundcloud?.url || release.soundcloud || release.platformLinks?.soundcloud),
       color: '#FF5500',
       badge: 'DUBPLATE',
       actionText: 'Stream',
-      hasUrl: !!(linkData?.linksByPlatform.soundcloud?.url || release.soundcloud),
     },
     {
       id: 'pandora',
       name: 'Pandora',
-      url: linkData?.linksByPlatform.pandora?.url || (release as any).pandora,
+      rawUrl: linkData?.linksByPlatform.pandora?.url || (release as any).pandora || (release.platformLinks as any)?.pandora,
       color: '#00A0EE',
       badge: 'RADIO',
       actionText: 'Listen',
-      hasUrl: !!(linkData?.linksByPlatform.pandora?.url || (release as any).pandora),
     },
     {
       id: 'napster',
       name: 'Napster',
-      url: linkData?.linksByPlatform.napster?.url || (release as any).napster,
+      rawUrl: linkData?.linksByPlatform.napster?.url || (release as any).napster || (release.platformLinks as any)?.napster,
       color: '#005DF7',
       badge: 'CLASSIC',
       actionText: 'Stream',
-      hasUrl: !!(linkData?.linksByPlatform.napster?.url || (release as any).napster),
     },
     {
       id: 'anghami',
       name: 'Anghami',
-      url: linkData?.linksByPlatform.anghami?.url || (release as any).anghami,
+      rawUrl: (release.id === 'far-away' || release.slug === 'far-away')
+        ? 'https://play.anghami.com/song/1289587765'
+        : (linkData?.linksByPlatform.anghami?.url || (release as any).anghami || (release.platformLinks as any)?.anghami),
       color: '#ED1B24',
       badge: 'MIDDLE EAST',
       actionText: 'Listen',
-      hasUrl: !!(linkData?.linksByPlatform.anghami?.url || (release as any).anghami),
     },
     {
       id: 'audius',
       name: 'Audius',
-      url: linkData?.linksByPlatform.audius?.url || (release as any).audius,
+      rawUrl: linkData?.linksByPlatform.audius?.url || (release as any).audius || (release.platformLinks as any)?.audius,
       color: '#CC00FF',
       badge: 'WEB3',
       actionText: 'Stream',
-      hasUrl: !!(linkData?.linksByPlatform.audius?.url || (release as any).audius),
     },
   ];
+
+  const platforms = rawPlatforms.map((p) => {
+    const url = getResolvedUrl(p.id, p.rawUrl);
+    return {
+      ...p,
+      url,
+      hasUrl: !!url,
+    };
+  });
 
   const availablePlatforms = platforms.filter(p => p.hasUrl);
 
@@ -257,18 +335,50 @@ export default function MusicLinks({ release, onBackToHome }: MusicLinksProps) {
         {/* Meta details */}
         <div className="space-y-2 mb-6">
           <span className="text-[10px] font-mono text-vaw-pink uppercase tracking-widest font-black block">
-            {release.type.toUpperCase()} • {release.status === 'coming_soon' ? 'PRE-SAVE HUB' : 'OUT NOW'}
+            {release.type.toUpperCase()} • {!timeLeft.isPast ? 'PRE-SAVE HUB' : 'OUT NOW'}
           </span>
           <h1 className="text-3xl sm:text-4xl font-display font-extrabold tracking-tight text-white leading-none">
             {release.title}
           </h1>
           <p className="text-sm font-mono text-zinc-400 uppercase tracking-widest">
-            Vaw Lyne
+            {release.artist || 'Vaw Lyne'}
           </p>
-          <span className="inline-block text-[10px] font-mono text-zinc-500 bg-white/5 px-2.5 py-1 rounded-full border border-white/5 mt-1">
+          {release.genre && (
+            <span className="inline-block text-[10px] font-mono text-vaw-pink/85 bg-vaw-pink/5 px-2.5 py-0.5 rounded-full border border-vaw-pink/10 mt-1 uppercase tracking-wider">
+              {release.genre}
+            </span>
+          )}
+          <span className="inline-block text-[10px] font-mono text-zinc-500 bg-white/5 px-2.5 py-1 rounded-full border border-white/5 mt-1 ml-2">
             Released: {release.releaseDate}
           </span>
         </div>
+
+        {/* Countdown Timer (Pre-release) */}
+        {!timeLeft.isPast && (
+          <div className="w-full max-w-md bg-white/[0.03] border border-white/5 rounded-2xl p-5 mb-8 text-center space-y-3 relative overflow-hidden">
+            <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-vaw-pink/50 to-transparent" />
+            <span className="text-[10px] font-mono text-vaw-pink uppercase tracking-widest font-black block">
+              RELEASING IN
+            </span>
+            <div className="grid grid-cols-4 gap-2">
+              {[
+                { label: 'DAYS', value: timeLeft.days },
+                { label: 'HOURS', value: timeLeft.hours },
+                { label: 'MINS', value: timeLeft.minutes },
+                { label: 'SECS', value: timeLeft.seconds },
+              ].map((item) => (
+                <div key={item.label} className="bg-zinc-950/40 rounded-xl p-3 border border-white/5">
+                  <span className="text-2xl sm:text-3xl font-display font-black text-white block">
+                    {String(item.value).padStart(2, '0')}
+                  </span>
+                  <span className="text-[9px] font-mono text-zinc-500 tracking-wider block mt-1">
+                    {item.label}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Description intro */}
         <p className="text-xs sm:text-sm text-zinc-300 leading-relaxed max-w-md font-sans mb-8">
@@ -357,7 +467,7 @@ export default function MusicLinks({ release, onBackToHome }: MusicLinksProps) {
                         </span>
                       ) : (
                         <button
-                          onClick={() => handlePreSave(platform.id)}
+                          onClick={() => handlePreSave(platform.id, platform.url)}
                           style={{
                             background: 'linear-gradient(135deg, #FF4FA3, #FF75B5)'
                           }}

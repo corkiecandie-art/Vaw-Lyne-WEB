@@ -1,8 +1,11 @@
 import { useEffect, useState } from 'react';
 import { Calendar, MapPin, Ticket, Sparkles, ExternalLink, Info } from 'lucide-react';
+import { useCollection } from '../hooks/useFirebase';
+import { TourEvent } from '../models';
 
 export default function Tour() {
   const [scriptLoaded, setScriptLoaded] = useState(false);
+  const { data: customEvents } = useCollection<TourEvent>('tourEvents');
 
   useEffect(() => {
     // Dynamically load the Bandsintown widget script
@@ -224,6 +227,38 @@ export default function Tour() {
             data-display-upcoming-events-badge="true"
           ></a>
         </div>
+
+        {/* Custom Admin Scheduled Tour Dates */}
+        {customEvents && customEvents.filter(e => e.status === 'upcoming').length > 0 && (
+          <div className="relative z-10 mt-8 pt-8 border-t border-white/5 space-y-4">
+            <h4 className="text-sm font-display font-bold text-white uppercase tracking-wider flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-vaw-pink animate-pulse" />
+              Special Event Showings (Direct Bookings)
+            </h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {customEvents.filter(e => e.status === 'upcoming').map((event) => (
+                <div key={event.id} className="p-4 rounded-2xl bg-white/[0.03] border border-white/5 hover:border-white/10 transition-all flex items-center justify-between gap-4">
+                  <div className="space-y-1.5 min-w-0">
+                    <span className="text-[10px] font-mono text-vaw-pink font-bold uppercase">{event.date}</span>
+                    <h5 className="text-xs font-bold text-white truncate">{event.venue}</h5>
+                    <p className="text-[11px] text-zinc-400 flex items-center gap-1">
+                      <MapPin className="w-3 h-3 shrink-0 text-zinc-500" />
+                      {event.location}
+                    </p>
+                  </div>
+                  <a
+                    href={event.ticketUrl || 'https://bandsintown.com'}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-vaw-pink to-rose-mist text-white text-[10px] font-mono font-bold uppercase tracking-wider shadow-md hover:opacity-95 cursor-pointer shrink-0"
+                  >
+                    Tickets
+                  </a>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Under-widget Premium Trust Info Bar */}
         <div className="relative z-10 mt-6 pt-6 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">

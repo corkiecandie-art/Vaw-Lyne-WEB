@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import { Sparkles, Check, ArrowRight } from 'lucide-react';
+import { Sparkles, Check, ArrowRight, ShieldCheck, Lock } from 'lucide-react';
+import PrivacyPolicyModal from './PrivacyPolicyModal';
+import { saveDocument } from '../services/firebase/services';
 
 export default function FanClub() {
   const [formData, setFormData] = useState({
@@ -10,23 +12,38 @@ export default function FanClub() {
   });
   const [submitted, setSubmitted] = useState(false);
   const [membershipId, setMembershipId] = useState('');
+  const [isPrivacyModalOpen, setIsPrivacyModalOpen] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name || !formData.email) return;
 
-    // Generate a premium dynamic membership ID
+    // Generate a dynamic membership ID
     const randomNum = Math.floor(1000 + Math.random() * 9000);
     const code = `VL-${formData.region.substring(0, 2).toUpperCase()}-${randomNum}`;
     setMembershipId(code);
     setSubmitted(true);
 
-    // Save to localStorage so they persist their premium signup
-    localStorage.setItem('vaw_lyne_inner_circle', JSON.stringify({
-      ...formData,
-      membershipId: code,
+    const fanData = {
+      id: `fan_${Date.now()}`,
+      name: formData.name,
+      email: formData.email,
+      vibe: formData.vibe,
+      country: formData.region,
       joinedAt: new Date().toISOString(),
-    }));
+      membershipCode: code,
+      preferredPlatform: 'Spotify'
+    };
+
+    // Save to localStorage for instant local access
+    localStorage.setItem('vaw_lyne_inner_circle', JSON.stringify(fanData));
+
+    // Also persist directly into Firestore 'fans' collection
+    try {
+      await saveDocument('fans', fanData);
+    } catch (err) {
+      console.warn('Firestore fan save fallback:', err);
+    }
   };
 
   return (
@@ -103,14 +120,24 @@ export default function FanClub() {
                 </select>
               </div>
 
-              <button type="submit" className="flex items-center justify-center gap-2 uppercase tracking-widest font-mono">
+              <button type="submit" className="flex items-center justify-center gap-2 uppercase tracking-widest font-mono cursor-pointer">
                 CLAIM YOUR ACCESS PASS <ArrowRight className="w-4 h-4" />
               </button>
             </form>
 
-            <small className="font-mono text-[10px] tracking-widest">
-              BY JOINING, YOU AGREE TO RECEIVE PRIVATE DISPATCHES FROM VAW LYNE AND BILION VIBEZ INT.
-            </small>
+            <div className="mt-4 pt-3 border-t border-white/10 flex flex-col items-center gap-1.5 text-center">
+              <p className="font-mono text-[10px] text-zinc-400 tracking-wide flex items-center justify-center gap-1.5">
+                <ShieldCheck className="w-3.5 h-3.5 text-vaw-pink shrink-0" />
+                <span>PRIVACY GUARANTEE: Your details are encrypted &amp; stored securely. We never sell or share fan data. Unsubscribe anytime.</span>
+              </p>
+              <button
+                type="button"
+                onClick={() => setIsPrivacyModalOpen(true)}
+                className="text-[10px] font-mono text-vaw-pink hover:text-white underline cursor-pointer transition-colors"
+              >
+                Read Official Privacy Policy
+              </button>
+            </div>
           </div>
         ) : (
           <div className="space-y-6 py-6 animate-fade-in">
@@ -154,13 +181,19 @@ export default function FanClub() {
 
             <button
               onClick={() => setSubmitted(false)}
-              className="px-6 py-2.5 rounded-full border border-white/10 hover:border-white/35 text-xs text-zinc-300 hover:text-white transition-all font-mono tracking-wider uppercase"
+              className="px-6 py-2.5 rounded-full border border-white/10 hover:border-white/35 text-xs text-zinc-300 hover:text-white transition-all font-mono tracking-wider uppercase cursor-pointer"
             >
               Back to registration
             </button>
           </div>
         )}
+
+        <PrivacyPolicyModal
+          isOpen={isPrivacyModalOpen}
+          onClose={() => setIsPrivacyModalOpen(false)}
+        />
       </div>
     </section>
   );
 }
+

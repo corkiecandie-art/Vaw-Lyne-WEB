@@ -40,6 +40,29 @@ export interface Release {
     appleMusic?: string;
     deezer?: string;
   };
+
+  // Firestore-ready metadata fields requested
+  slug?: string;
+  coverImage?: string;
+  genre?: string;
+  platformLinks?: {
+    spotify?: string;
+    appleMusic?: string;
+    youtube?: string;
+    youtubeMusic?: string;
+    amazon?: string;
+    deezer?: string;
+    tidal?: string;
+    boomplay?: string;
+    soundcloud?: string;
+    audiomack?: string;
+    anghami?: string;
+    pandora?: string;
+    napster?: string;
+    audius?: string;
+  };
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface StreamingPlatform {

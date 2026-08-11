@@ -3,45 +3,222 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect } from 'react';
-import { Sparkles, MapPin, Mail, Globe, ArrowUp, Play } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Sparkles, MapPin, Mail, Globe, ArrowUp, Play, Lock, ShieldCheck } from 'lucide-react';
 import { TRACKS } from './data';
-import { RELEASES, Release } from './data/releases';
+import { RELEASES } from './data/releases';
+import { useCollection } from './hooks/useFirebase';
+import { Release } from './models';
+import { 
+  fetchServerSyncedReleases, 
+  fetchSyncStatus, 
+  triggerServerAutoSync, 
+  SyncStatus 
+} from './services/clientSync';
 
 // Modular components
 import PlaylistsSection from './components/PlaylistsSection';
 import SinglesGrid from './components/SinglesGrid';
 import SmartRelease from './components/SmartRelease';
 import Tour from './components/Tour';
+import PhotoGallery from './components/PhotoGallery';
 import BioSection from './components/BioSection';
-import GenreMixer from './components/GenreMixer';
 import SocialLinks from './components/SocialLinks';
 import ContactSection from './components/ContactSection';
 import FanClub from './components/FanClub';
 import MusicLinks from './components/MusicLinks';
 import AdminDashboard from './components/AdminDashboard';
+import ProtectedRoute from './components/ProtectedRoute';
+import LoginPage from './pages/Login';
+import PrivacyPolicyModal from './components/PrivacyPolicyModal';
+
+/**
+ * BoomerangVideo: Smooth forward-and-reverse video playback loop with no pause
+ */
+function BoomerangVideo({ src, poster }: { src: string; poster: string }) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    let isReversing = false;
+    let animId: number;
+    let lastTime = performance.now();
+
+    const loopStep = (now: number) => {
+      const delta = (now - lastTime) / 1000;
+      lastTime = now;
+
+      if (isReversing && video) {
+        if (video.currentTime <= 0.05) {
+          video.currentTime = 0;
+          isReversing = false;
+          video.play().catch(() => {});
+        } else {
+          video.currentTime = Math.max(0, video.currentTime - delta);
+        }
+      }
+      animId = requestAnimationFrame(loopStep);
+    };
+
+    const startReversing = () => {
+      if (!isReversing) {
+        isReversing = true;
+        video.pause();
+      }
+    };
+
+    const handleTimeUpdate = () => {
+      if (!isReversing && video.duration && video.currentTime >= video.duration - 0.12) {
+        startReversing();
+      }
+    };
+
+    const handleEnded = () => {
+      startReversing();
+    };
+
+    video.addEventListener('timeupdate', handleTimeUpdate);
+    video.addEventListener('ended', handleEnded);
+
+    lastTime = performance.now();
+    animId = requestAnimationFrame(loopStep);
+
+    return () => {
+      video.removeEventListener('timeupdate', handleTimeUpdate);
+      video.removeEventListener('ended', handleEnded);
+      if (animId) cancelAnimationFrame(animId);
+    };
+  }, []);
+
+  return (
+    <video
+      ref={videoRef}
+      autoPlay
+      muted
+      playsInline
+      preload="auto"
+      className="w-full h-full object-cover opacity-85 pointer-events-none select-none"
+      poster={poster}
+      onContextMenu={(e) => e.preventDefault()}
+      onDragStart={(e) => e.preventDefault()}
+    >
+      <source src={src} type="video/mp4" />
+    </video>
+  );
+}
 
 export default function App() {
   const [playingTrackId, setPlayingTrackId] = useState<string | null>(null);
   const [currentPath, setCurrentPath] = useState(window.location.pathname);
-
-  // Manage releases catalog with localStorage persistence
-  const [releases, setReleases] = useState<Release[]>(() => {
-    const saved = localStorage.getItem('vaw_lyne_releases');
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch (e) {
-        console.error('Error parsing stored releases:', e);
-      }
-    }
-    return RELEASES;
+  const [isPrivacyModalOpen, setIsPrivacyModalOpen] = useState(false);
+  const [theme, setTheme] = useState<'pink' | 'midnight'>(() => {
+    return (localStorage.getItem('vaw_theme') as 'pink' | 'midnight') || 'pink';
   });
 
-  const handleUpdateReleases = (updated: Release[]) => {
-    setReleases(updated);
-    localStorage.setItem('vaw_lyne_releases', JSON.stringify(updated));
+  useEffect(() => {
+    if (theme === 'midnight') {
+      document.documentElement.setAttribute('data-theme', 'midnight');
+    } else {
+      document.documentElement.removeAttribute('data-theme');
+    }
+    localStorage.setItem('vaw_theme', theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme((prev) => (prev === 'pink' ? 'midnight' : 'pink'));
   };
+
+  // Lock site media assets against right-clicking and saving
+  useEffect(() => {
+    const handleContextMenu = (e: MouseEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (
+        target &&
+        (target.tagName === 'IMG' ||
+          target.tagName === 'VIDEO' ||
+          target.closest('img') ||
+          target.closest('video'))
+      ) {
+        e.preventDefault();
+      }
+    };
+
+    const handleDragStart = (e: DragEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (
+        target &&
+        (target.tagName === 'IMG' ||
+          target.tagName === 'VIDEO' ||
+          target.closest('img') ||
+          target.closest('video'))
+      ) {
+        e.preventDefault();
+      }
+    };
+
+    document.addEventListener('contextmenu', handleContextMenu);
+    document.addEventListener('dragstart', handleDragStart);
+
+    return () => {
+      document.removeEventListener('contextmenu', handleContextMenu);
+      document.removeEventListener('dragstart', handleDragStart);
+    };
+  }, []);
+
+  // Manage releases catalog with live Firestore integration, server auto-sync, and static fallback
+  const { data: dbReleases } = useCollection<Release>('releases');
+  const [syncedReleases, setSyncedReleases] = useState<Release[]>([]);
+  const [syncStatus, setSyncStatus] = useState<SyncStatus | null>(null);
+  const [isSyncingLive, setIsSyncingLive] = useState(false);
+
+  // Poll server auto-sync releases and engine status
+  const refreshAutoSyncData = async () => {
+    const fetched = await fetchServerSyncedReleases();
+    if (fetched && fetched.length > 0) {
+      setSyncedReleases(fetched);
+    }
+    const status = await fetchSyncStatus();
+    if (status) {
+      setSyncStatus(status);
+    }
+  };
+
+  useEffect(() => {
+    refreshAutoSyncData();
+    // Re-check for new DSP releases every 30 seconds
+    const interval = setInterval(refreshAutoSyncData, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const handleManualSyncScan = async () => {
+    setIsSyncingLive(true);
+    const result = await triggerServerAutoSync();
+    if (result.syncedReleases && result.syncedReleases.length > 0) {
+      setSyncedReleases(result.syncedReleases);
+    } else {
+      await refreshAutoSyncData();
+    }
+    setIsSyncingLive(false);
+  };
+
+  // Merge synced releases + db releases + static fallbacks without duplicates
+  const releases = (() => {
+    const map = new Map<string, Release>();
+    // First insert static default releases
+    RELEASES.forEach((r) => map.set(r.id.toLowerCase(), r));
+    // Overwrite with DB releases if available
+    dbReleases.forEach((r) => map.set(r.id.toLowerCase(), r));
+    // Overwrite with live server auto-synced releases (ensuring newly auto-discovered tracks appear on top)
+    syncedReleases.forEach((r) => map.set(r.id.toLowerCase(), r));
+
+    return Array.from(map.values()).sort((a, b) => {
+      const dateA = new Date(a.releaseDate || '2000-01-01').getTime();
+      const dateB = new Date(b.releaseDate || '2000-01-01').getTime();
+      return dateB - dateA;
+    });
+  })();
 
   // Sync state with browser backward / forward buttons
   useEffect(() => {
@@ -91,11 +268,13 @@ export default function App() {
     }
   };
 
-  // Check if current path matches "/music/:slug"
-  const musicMatch = currentPath.match(/^\/music\/([^/]+)/);
+  // Check if current path matches "/music/:slug" or "/release/:slug"
+  const musicMatch = currentPath.match(/^\/(?:music|release)\/([^/]+)/);
   const selectedSlug = musicMatch ? musicMatch[1] : null;
-  const activeSmartRelease = selectedSlug ? releases.find(r => r.id === selectedSlug) : null;
-  const isAdmin = currentPath === '/admin';
+  const activeSmartRelease = selectedSlug 
+    ? releases.find(r => r.id === selectedSlug || r.slug === selectedSlug) 
+    : null;
+  const isAdmin = currentPath === '/admin' || currentPath === '/dashboard';
 
   return (
     <div className="min-h-screen bg-midnight-black text-soft-gray font-sans selection:bg-vaw-pink selection:text-black">
@@ -105,7 +284,8 @@ export default function App() {
       <div className="fixed bottom-10 left-10 w-96 h-96 rounded-full bg-[#C084FC]/5 blur-3xl pointer-events-none" />
 
       {/* Header Bar */}
-      <header className="sticky top-0 z-40 bg-midnight-black/85 backdrop-blur-md border-b border-white/5" id="top-nav">
+      {currentPath !== '/login' && (
+        <header className="sticky top-0 z-40 bg-midnight-black/85 backdrop-blur-md border-b border-white/5" id="top-nav">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           
           {/* Logo Title */}
@@ -154,8 +334,8 @@ export default function App() {
               Tour
             </a>
             <a 
-              href="#music-library" 
-              onClick={(e) => handleNavClick(e, 'music-library')}
+              href="#gallery" 
+              onClick={(e) => handleNavClick(e, 'gallery')}
               className="text-xs font-mono font-bold tracking-widest uppercase text-zinc-400 hover:text-vaw-pink transition-colors"
             >
               Gallery
@@ -167,29 +347,57 @@ export default function App() {
             >
               Social
             </a>
+            <a 
+              href="#contact-booking" 
+              onClick={(e) => handleNavClick(e, 'contact-booking')}
+              className="text-xs font-mono font-bold tracking-widest uppercase text-zinc-400 hover:text-vaw-pink transition-colors"
+            >
+              Contact
+            </a>
           </nav>
 
-          {/* Action CTA */}
-          <a
-            href="#vawlyne-fanclub"
-            onClick={(e) => handleNavClick(e, 'vawlyne-fanclub')}
-            className="px-4 py-2 rounded-xl bg-button-gradient text-white font-mono font-bold text-xs tracking-wider uppercase transition-all hover:opacity-90 shadow-md shadow-vaw-pink/20 cursor-pointer"
-          >
-            Join Fan Club
-          </a>
+          {/* Action CTAs */}
+          <div className="flex items-center gap-2.5">
+            {/* Theme Toggle Button */}
+            <button
+              onClick={toggleTheme}
+              className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-zinc-900/90 hover:bg-zinc-800 border border-white/10 text-xs font-mono font-bold tracking-wider uppercase text-zinc-300 transition-all cursor-pointer shadow-sm hover:border-vaw-pink/40"
+              title={`Switch theme (Current: ${theme === 'pink' ? 'Vaw Pink' : 'Midnight Blue'})`}
+            >
+              <span
+                className={`w-2.5 h-2.5 rounded-full transition-all ${
+                  theme === 'pink' ? 'bg-vaw-pink shadow-[0_0_8px_#FF4FA3]' : 'bg-sky-400 shadow-[0_0_8px_#38BDF8]'
+                }`}
+              />
+              <span className="hidden sm:inline">
+                {theme === 'pink' ? 'Vaw Pink' : 'Midnight Blue'}
+              </span>
+            </button>
+
+            <a
+              href="#vawlyne-fanclub"
+              onClick={(e) => handleNavClick(e, 'vawlyne-fanclub')}
+              className="px-4 py-2 rounded-xl bg-button-gradient text-white font-mono font-bold text-xs tracking-wider uppercase transition-all hover:opacity-90 shadow-md shadow-vaw-pink/20 cursor-pointer"
+            >
+              Join Fan Club
+            </a>
+          </div>
         </div>
       </header>
+      )}
 
       {/* Main Content Area */}
-      {isAdmin ? (
+      {currentPath === '/login' ? (
+        <LoginPage onNavigate={navigateTo} />
+      ) : isAdmin ? (
         /* Render Secure Admin Dashboard Area */
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 relative z-10">
-          <AdminDashboard 
-            releases={releases} 
-            onUpdateReleases={handleUpdateReleases} 
-            onNavigate={navigateTo}
-          />
-        </div>
+        <ProtectedRoute onNavigate={navigateTo}>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 relative z-10">
+            <AdminDashboard 
+              onNavigate={navigateTo}
+            />
+          </div>
+        </ProtectedRoute>
       ) : activeSmartRelease ? (
         /* Render Dedicated Smart Release Landing Page */
         <main className="relative z-10 py-6">
@@ -199,28 +407,28 @@ export default function App() {
           />
         </main>
       ) : (
-        /* Render Full Landing Page (Unchanged sections) */
-        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 relative z-10 space-y-16">
+        /* Render Full Landing Page */
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10 space-y-16">
           
           {/* HERO SECTION / SPOTLIGHT */}
-          <section className="relative overflow-hidden rounded-[32px] border border-white/10 shadow-2xl p-6 sm:p-10 md:p-16 lg:p-20 flex flex-col md:flex-row md:items-center justify-between gap-12 min-h-[500px]">
-            {/* Immersive 16:9 Widescreen Background Image */}
-            <div className="absolute inset-0 z-0">
-              <img
-                src="https://res.cloudinary.com/ax8kt8pw/image/upload/v1784618919/image-1784436581458_no4axg.png"
-                alt="Vaw Lyne 16:9 widescreen background"
-                className="w-full h-full object-cover opacity-55 filter brightness-[0.4] contrast-[1.1]"
-                referrerPolicy="no-referrer"
+          <section className="relative overflow-hidden rounded-[32px] border border-white/10 shadow-2xl p-6 sm:p-10 md:p-12 lg:p-16 flex flex-col md:flex-row md:items-center justify-between gap-10 min-h-[500px]">
+            
+            {/* Smooth High-Performance Video Background (Forward & Reverse Boomerang Loop) */}
+            <div className="absolute inset-0 z-0 overflow-hidden bg-black pointer-events-none select-none">
+              <BoomerangVideo
+                src="https://res.cloudinary.com/ax8kt8pw/video/upload/f_mp4,q_auto,w_1280/v1786441981/She_smiles_to_camera_1080p_202608031433_v33rmu.mp4"
+                poster="https://res.cloudinary.com/ax8kt8pw/image/upload/v1786442214/Woman_with_braids_facing_camera_202607260106_1_cmug5m.jpg"
               />
-              {/* Gradient overlays to guarantee superb text contrast */}
-              <div className="absolute inset-0 bg-gradient-to-r from-midnight-black via-midnight-black/80 to-transparent md:block hidden" />
-              <div className="absolute inset-0 bg-gradient-to-b from-midnight-black/95 via-midnight-black/70 to-midnight-black md:hidden block" />
-              <div className="absolute inset-0 bg-black/30 backdrop-blur-[1px]" />
+
+              {/* Smooth gradient overlay for optimum text legibility */}
+              <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/50 to-transparent md:block hidden pointer-events-none" />
+              <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/40 to-black/90 md:hidden block pointer-events-none" />
             </div>
 
-            <div className="relative z-10 max-w-2xl space-y-5 text-left">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-vaw-pink/10 border border-vaw-pink/20 text-rose-mist text-xs font-mono font-medium">
-                <Sparkles className="w-3.5 h-3.5 text-vaw-pink animate-pulse" />
+            {/* Hero Content */}
+            <div className="relative z-10 max-w-xl space-y-5 text-left">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-vaw-pink/10 border border-vaw-pink/30 text-rose-mist text-xs font-mono font-medium backdrop-blur-sm">
+                <Sparkles className="w-3.5 h-3.5 text-vaw-pink" />
                 BILION VIBEZ INT PRESENTS
               </div>
 
@@ -228,18 +436,18 @@ export default function App() {
                 VAW <span className="text-transparent bg-clip-text bg-gradient-to-r from-vaw-pink via-rose-mist to-lavender-aura">LYNE</span>
               </h1>
 
-              <p className="text-zinc-200 text-base md:text-lg leading-relaxed font-sans drop-shadow-sm">
+              <p className="text-zinc-200 text-base md:text-lg leading-relaxed font-sans font-medium drop-shadow-sm">
                 Nigerian singer-songwriter based in the United Kingdom. Fusing <strong>Afro House, Deep House, Afro Soul, Amapiano, and R&B</strong> into global story-driven anthems of empowerment, love, and growth.
               </p>
 
-              <div className="flex flex-wrap items-center gap-4 pt-3">
+              <div className="flex flex-wrap items-center gap-3 pt-2">
                 <button
                   onClick={() => {
                     setPlayingTrackId(TRACKS[0].id);
                     const el = document.getElementById('music-library');
                     if (el) el.scrollIntoView({ behavior: 'smooth' });
                   }}
-                  className="flex items-center gap-2 px-6 py-3.5 rounded-xl bg-button-gradient hover:opacity-90 text-white font-bold text-xs uppercase tracking-wider transition-all shadow-xl shadow-vaw-pink/20 cursor-pointer"
+                  className="flex items-center gap-2 px-6 py-3.5 rounded-xl bg-button-gradient hover:opacity-90 text-white font-bold text-xs uppercase tracking-wider transition-all shadow-xl shadow-vaw-pink/25 cursor-pointer hover:scale-105 active:scale-95"
                 >
                   <Play className="w-4 h-4 fill-current ml-0.5" />
                   Listen Inline Now
@@ -247,33 +455,34 @@ export default function App() {
                 <a
                   href="#ep-playlists"
                   onClick={(e) => handleNavClick(e, 'ep-playlists')}
-                  className="px-6 py-3.5 rounded-xl bg-zinc-900/85 hover:bg-zinc-800/90 border border-white/10 text-white font-bold text-xs uppercase tracking-wider transition-all cursor-pointer backdrop-blur-sm"
+                  className="px-6 py-3.5 rounded-xl bg-zinc-900/80 hover:bg-zinc-800 border border-white/15 text-white font-bold text-xs uppercase tracking-wider transition-all cursor-pointer backdrop-blur-sm"
                 >
                   EP Playlists
                 </a>
               </div>
             </div>
 
-            {/* Visual Showcase Card right side */}
-            <div className="relative z-10 w-full max-w-sm mx-auto md:mx-0 glass-panel rounded-3xl p-6 border border-white/10 shadow-2xl overflow-hidden group">
-              <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/90 z-10 pointer-events-none" />
+            {/* Side Spotlight Image Card */}
+            <div className="relative z-10 w-full max-w-xs mx-auto md:mx-0 glass-panel rounded-3xl p-4 border border-white/15 shadow-2xl overflow-hidden group select-none">
+              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/80 z-10 pointer-events-none" />
               <div className="relative aspect-[4/5] rounded-2xl overflow-hidden bg-zinc-950">
                 <img
-                  src="https://res.cloudinary.com/ax8kt8pw/image/upload/v1784618920/image-1784439857610_hlp69e.jpg"
-                  alt="Vaw Lyne portrait representation"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                  src="https://res.cloudinary.com/ax8kt8pw/image/upload/v1786442214/Woman_with_braids_facing_camera_202607260106_1_cmug5m.jpg"
+                  alt="Vaw Lyne portrait"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none select-none"
                   referrerPolicy="no-referrer"
+                  draggable={false}
+                  onContextMenu={(e) => e.preventDefault()}
                 />
               </div>
 
-              {/* Subtle credit line */}
-              <div className="mt-4 relative z-20 flex items-center justify-between">
+              <div className="mt-3 relative z-20 flex items-center justify-between">
                 <div>
-                  <span className="text-[10px] font-mono text-vaw-pink block font-semibold">SPOTLIGHT SELECTION</span>
-                  <span className="text-sm font-display font-extrabold text-white mt-0.5 block leading-tight">Love & Lies Vibe</span>
+                  <span className="text-[10px] font-mono text-vaw-pink block font-semibold">ARTIST GALLERY</span>
+                  <span className="text-xs font-display font-bold text-white block">Love & Lies Era</span>
                 </div>
-                <span className="text-[10px] font-mono text-zinc-500 flex items-center gap-1">
-                  <MapPin className="w-3 h-3 text-red-500" /> UK
+                <span className="text-[10px] font-mono text-zinc-400 flex items-center gap-1 bg-black/60 px-2 py-0.5 rounded-lg border border-white/10">
+                  <MapPin className="w-3 h-3 text-vaw-pink" /> London, UK
                 </span>
               </div>
             </div>
@@ -292,15 +501,15 @@ export default function App() {
           <SmartRelease 
             releases={releases}
             onSelectRelease={(release) => {
-              navigateTo(`/music/${release.id}`);
+              navigateTo(`/release/${release.slug || release.id}`);
             }} 
           />
 
           {/* 3. VAW LYNE WORLD TOUR SECTION */}
           <Tour />
 
-          {/* 4. GENRE CHARACTERISTICS ANALYSIS */}
-          <GenreMixer />
+          {/* 4. PHOTO GALLERY SHOWCASE */}
+          <PhotoGallery />
 
           {/* 5. BIO & BIO DETAILS */}
           <BioSection />
@@ -320,7 +529,8 @@ export default function App() {
       )}
 
       {/* Premium Elegant Footer */}
-      <footer className="border-t border-white/5 bg-zinc-950/40 py-16 mt-20 relative z-10">
+      {currentPath !== '/login' && (
+        <footer className="border-t border-white/5 bg-zinc-950/40 py-16 mt-20 relative z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start mb-12">
             
@@ -368,6 +578,11 @@ export default function App() {
                     Contact &amp; Booking
                   </a>
                 </li>
+                <li>
+                  <button onClick={() => setIsPrivacyModalOpen(true)} className="hover:text-vaw-pink transition-colors cursor-pointer text-left">
+                    Privacy &amp; Data Policy
+                  </button>
+                </li>
               </ul>
             </div>
 
@@ -393,17 +608,28 @@ export default function App() {
 
           {/* Copyright Row */}
           <div className="border-t border-white/5 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-[10px] font-mono text-zinc-600">
-            <p>© {new Date().getFullYear()} Vaw Lyne. All rights reserved. Presented by BILION VIBEZ INT.</p>
-            
-            <div className="flex items-center gap-4">
+            <div className="flex flex-wrap items-center gap-2">
+              <span>© {new Date().getFullYear()} Vaw Lyne. All rights reserved. Presented by BILION VIBEZ INT.</span>
+              <span className="text-zinc-700">|</span>
+              <button
+                onClick={() => setIsPrivacyModalOpen(true)}
+                className="inline-flex items-center gap-1.5 text-vaw-pink hover:text-white underline transition-colors cursor-pointer"
+              >
+                <ShieldCheck className="w-3.5 h-3.5 text-vaw-pink" />
+                Privacy &amp; Data Policy
+              </button>
+              <span className="text-zinc-700">|</span>
               <button
                 onClick={() => navigateTo('/admin')}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-zinc-900/50 hover:bg-zinc-800 text-zinc-500 hover:text-vaw-pink transition-all border border-white/5 cursor-pointer"
-                title="Secure Admin Dashboard"
+                className="p-1 text-zinc-700 hover:text-zinc-400 transition-colors rounded cursor-pointer opacity-40 hover:opacity-100"
+                title="System Access"
+                aria-label="System Access"
               >
-                <Sparkles className="w-3 h-3 text-vaw-pink" />
-                Admin Portal
+                <Lock className="w-3 h-3 text-zinc-500 hover:text-vaw-pink" />
               </button>
+            </div>
+            
+            <div className="flex items-center gap-4">
               <button
                 onClick={scrollToTop}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-zinc-900 hover:bg-zinc-850 text-zinc-400 hover:text-white transition-all border border-white/5 cursor-pointer"
@@ -416,6 +642,12 @@ export default function App() {
           </div>
         </div>
       </footer>
+      )}
+
+      <PrivacyPolicyModal
+        isOpen={isPrivacyModalOpen}
+        onClose={() => setIsPrivacyModalOpen(false)}
+      />
     </div>
   );
 }

@@ -153,7 +153,7 @@ export const PLAYLISTS: Playlist[] = [
     description: "A sultry blend of late-night vibes, rich syncopation, and smooth storytelling. Explore Vaw Lyne's deep Afro-fusion sensibilities.",
     tracksCount: 6,
     genre: 'Afro House / Deep House / Amapiano',
-    coverImage: 'https://res.cloudinary.com/ax8kt8pw/image/upload/v1784618920/image-1784439857610_hlp69e.jpg'
+    coverImage: 'https://i.audiomack.com/vaw-lyne/358669d77a.webp?width=1440'
   },
   {
     id: 'PLxfArbcp8KM-Z5cmxy--p692dALZga66y',

@@ -1,0 +1,248 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "Authenticated admin users and roles",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "description": "The unique Firebase Authentication UID of the user"
+        },
+        "email": {
+          "type": "string",
+          "description": "The user's registered email address"
+        },
+        "role": {
+          "type": "string",
+          "enum": ["super_admin", "admin", "manager", "editor", "viewer"],
+          "description": "Role determining the user's access permissions"
+        },
+        "active": {
+          "type": "boolean",
+          "description": "Whether the user's account is active"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "ISO timestamp or server time of account creation"
+        },
+        "lastLogin": {
+          "type": "string",
+          "description": "ISO timestamp of user's last successful login"
+        }
+      },
+      "required": ["uid", "email", "role", "active", "createdAt"]
+    },
+    "AuditLog": {
+      "title": "AuditLog",
+      "description": "Immutable log recording administrative actions",
+      "type": "object",
+      "properties": {
+        "timestamp": {
+          "type": "string",
+          "description": "ISO timestamp of the action"
+        },
+        "userId": {
+          "type": "string",
+          "description": "UID of the user who performed the action"
+        },
+        "userEmail": {
+          "type": "string",
+          "description": "Email of the user who performed the action"
+        },
+        "action": {
+          "type": "string",
+          "description": "Descriptive label of the action performed (e.g., login, release creation)"
+        }
+      },
+      "required": ["timestamp", "userId", "userEmail", "action"]
+    },
+    "Release": {
+      "title": "Release",
+      "description": "Music release records",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "artist": { "type": "string" },
+        "artwork": { "type": "string" },
+        "artworkUrl": { "type": "string" },
+        "releaseDate": { "type": "string" },
+        "status": { "type": "string", "enum": ["out_now", "coming_soon"] },
+        "publishedState": { "type": "string", "enum": ["published", "draft"] },
+        "type": { "type": "string", "enum": ["single", "ep", "album", "remix"] },
+        "description": { "type": "string" }
+      },
+      "required": ["id", "title", "artist", "artwork", "releaseDate", "status", "publishedState", "type"]
+    },
+    "Album": {
+      "title": "Album",
+      "description": "Album configurations",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "type": { "type": "string", "enum": ["album", "ep"] },
+        "releaseYear": { "type": "string" },
+        "embedUrl": { "type": "string" },
+        "description": { "type": "string" },
+        "tracksCount": { "type": "number" },
+        "genre": { "type": "string" },
+        "coverImage": { "type": "string" },
+        "publishedState": { "type": "string", "enum": ["published", "draft"] }
+      },
+      "required": ["id", "title", "type", "releaseYear", "description", "tracksCount", "genre", "coverImage", "publishedState"]
+    },
+    "Track": {
+      "title": "Track",
+      "description": "Single song tracks",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "category": { "type": "string", "enum": ["single", "visualizer", "release"] },
+        "releaseYear": { "type": "string" },
+        "description": { "type": "string" },
+        "genre": { "type": "string" },
+        "duration": { "type": "string" }
+      },
+      "required": ["id", "title", "category", "releaseYear", "description", "genre", "duration"]
+    },
+    "TourEvent": {
+      "title": "TourEvent",
+      "description": "Live touring events",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "date": { "type": "string" },
+        "venue": { "type": "string" },
+        "location": { "type": "string" },
+        "status": { "type": "string", "enum": ["upcoming", "past"] }
+      },
+      "required": ["id", "date", "venue", "location", "status"]
+    },
+    "GalleryImage": {
+      "title": "GalleryImage",
+      "description": "Gallery images",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "url": { "type": "string" },
+        "order": { "type": "number" },
+        "uploadedAt": { "type": "string" }
+      },
+      "required": ["id", "url", "order", "uploadedAt"]
+    },
+    "VideoItem": {
+      "title": "VideoItem",
+      "description": "YouTube or Vimeo video links",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "url": { "type": "string" },
+        "platform": { "type": "string", "enum": ["youtube", "vimeo"] },
+        "thumbnailUrl": { "type": "string" },
+        "uploadedAt": { "type": "string" }
+      },
+      "required": ["id", "title", "url", "platform", "thumbnailUrl", "uploadedAt"]
+    },
+    "NewsletterSubscriber": {
+      "title": "NewsletterSubscriber",
+      "description": "Public newsletter subscriptions",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "email": { "type": "string" },
+        "subscribedAt": { "type": "string" }
+      },
+      "required": ["id", "email", "subscribedAt"]
+    },
+    "Fan": {
+      "title": "Fan",
+      "description": "Registered fans and pre-saves",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "email": { "type": "string" },
+        "joinedAt": { "type": "string" }
+      },
+      "required": ["id", "email", "joinedAt"]
+    },
+    "AnalyticsData": {
+      "title": "AnalyticsData",
+      "description": "System counters and stats",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "totalReleases": { "type": "number" },
+        "totalTourEvents": { "type": "number" },
+        "totalFanSubscribers": { "type": "number" },
+        "totalLinkClicks": { "type": "number" },
+        "totalStreams": { "type": "number" }
+      },
+      "required": ["id", "totalReleases", "totalTourEvents", "totalFanSubscribers", "totalLinkClicks", "totalStreams"]
+    },
+    "Settings": {
+      "title": "Settings",
+      "description": "Global website configuration",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "artistName": { "type": "string" },
+        "biography": { "type": "string" }
+      },
+      "required": ["id", "artistName", "biography"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "System users and roles collection"
+    },
+    "/auditLogs/{logId}": {
+      "schema": "AuditLog",
+      "description": "Immutable user and system action logs"
+    },
+    "/releases/{releaseId}": {
+      "schema": "Release",
+      "description": "Public and draft releases"
+    },
+    "/albums/{albumId}": {
+      "schema": "Album",
+      "description": "Albums listing"
+    },
+    "/tracks/{trackId}": {
+      "schema": "Track",
+      "description": "Music tracks"
+    },
+    "/tourEvents/{eventId}": {
+      "schema": "TourEvent",
+      "description": "Tour schedule events"
+    },
+    "/gallery/{imageId}": {
+      "schema": "GalleryImage",
+      "description": "Gallery image records"
+    },
+    "/videos/{videoId}": {
+      "schema": "VideoItem",
+      "description": "Embedded visual content list"
+    },
+    "/newsletterSubscribers/{subId}": {
+      "schema": "NewsletterSubscriber",
+      "description": "Newsletter email list"
+    },
+    "/fans/{fanId}": {
+      "schema": "Fan",
+      "description": "Fans portal members"
+    },
+    "/analytics/{analyticsId}": {
+      "schema": "AnalyticsData",
+      "description": "Aggregated stats"
+    },
+    "/settings/{settingsId}": {
+      "schema": "Settings",
+      "description": "Dynamic website configuration settings"
+    }
+  }
+}

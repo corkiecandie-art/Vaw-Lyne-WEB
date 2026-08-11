@@ -23,7 +23,7 @@ export default function ContactSection() {
     setStatus('idle');
 
     try {
-      const response = await fetch('https://formspree.io/f/mzdnvpyy', {
+      const response = await fetch('/api/contact', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -47,7 +47,7 @@ export default function ContactSection() {
         setStatus('error');
       }
     } catch (err) {
-      console.error('Formspree submission error:', err);
+      console.error('Contact submission error:', err);
       setStatus('error');
     } finally {
       setIsSubmitting(false);
@@ -113,7 +113,7 @@ export default function ContactSection() {
 
             <div className="border-t border-white/5 pt-4 mt-6">
               <p className="text-zinc-500 text-[10px] leading-relaxed font-mono">
-                Messages submitted here are routed securely via Formspree to Vaw Lyne's official communications inbox.
+                Messages submitted here are processed securely and dispatched to Vaw Lyne's team.
               </p>
             </div>
           </div>
@@ -123,8 +123,6 @@ export default function ContactSection() {
             <div className="bg-black/40 border border-white/5 rounded-2xl p-6 md:p-8">
               <form
                 onSubmit={handleSubmit}
-                action="https://formspree.io/f/mzdnvpyy"
-                method="POST"
                 className="space-y-4"
               >
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

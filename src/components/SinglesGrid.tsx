@@ -5,7 +5,8 @@
 
 import { useState } from 'react';
 import { Play, Search, Filter, Sparkles, Clock, Calendar, Check } from 'lucide-react';
-import { Track } from '../types';
+import { Track } from '../models';
+import { useCollection } from '../hooks/useFirebase';
 import { TRACKS } from '../data';
 
 interface SinglesGridProps {
@@ -17,6 +18,9 @@ export default function SinglesGrid({ playingTrackId, setPlayingTrackId }: Singl
   const [search, setSearch] = useState('');
   const [activeCategory, setActiveCategory] = useState<'all' | 'single' | 'visualizer' | 'release'>('all');
   const [activeGenre, setActiveGenre] = useState<string>('all');
+  const { data: tracks, loading } = useCollection<Track>('tracks');
+
+  const activeTracks = (tracks && tracks.length > 0) ? tracks : TRACKS;
 
   // Filter lists
   const categories = [
@@ -29,7 +33,7 @@ export default function SinglesGrid({ playingTrackId, setPlayingTrackId }: Singl
   const genres = ['all', 'Afro Soul', 'Afro House', 'Deep House', 'Amapiano', 'Afro-pop', 'R&B'];
 
   // Apply search & filter logic
-  const filteredTracks = TRACKS.filter((track) => {
+  const filteredTracks = activeTracks.filter((track) => {
     const matchesSearch = track.title.toLowerCase().includes(search.toLowerCase()) ||
                           track.genre.toLowerCase().includes(search.toLowerCase());
     const matchesCategory = activeCategory === 'all' || track.category === activeCategory;

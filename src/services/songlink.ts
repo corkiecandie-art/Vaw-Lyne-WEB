@@ -44,8 +44,7 @@ export async function getMusicLinks(params: {
   userCountry?: string;
 }): Promise<OdesliResponse | null> {
   const primaryUrl = params.spotifyUrl || params.appleMusicUrl || params.youtubeUrl;
-  if (!primaryUrl) {
-    console.warn('Odesli query requires at least one primary streaming store URL');
+  if (!primaryUrl || typeof primaryUrl !== 'string' || !primaryUrl.startsWith('http')) {
     return null;
   }
 
@@ -53,15 +52,19 @@ export async function getMusicLinks(params: {
   const apiUrl = `https://api.song.link/v1-alpha.1/links?url=${encodeURIComponent(primaryUrl)}&userCountry=${country}`;
 
   try {
-    const response = await fetch(apiUrl);
-    if (!response.ok) {
-      throw new Error(`Odesli API responded with status ${response.status}`);
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+    const response = await fetch(apiUrl, { signal: controller.signal }).catch(() => null);
+    clearTimeout(timeoutId);
+
+    if (!response || !response.ok) {
+      return null;
     }
-    const data = await response.json();
-    return data as OdesliResponse;
-  } catch (error) {
-    console.error('Error fetching universal links from Odesli:', error);
-    // Return null or prepare fallback simulated data to avoid breaking the UI
+    const data = await response.json().catch(() => null);
+    return data as OdesliResponse | null;
+  } catch {
+    // Return null gracefully when network or CORS is unavailable
     return null;
   }
 }
@@ -79,6 +82,7 @@ async function queryOdesli(params: {
   const queryParams = new URLSearchParams();
   
   if (params.url) {
+    if (!params.url.startsWith('http')) return null;
     queryParams.append('url', params.url);
   } else {
     if (params.platform) queryParams.append('platform', params.platform);
@@ -88,11 +92,19 @@ async function queryOdesli(params: {
   
   queryParams.append('userCountry', 'US');
   
-  const response = await fetch(`${baseUrl}?${queryParams.toString()}`);
-  if (!response.ok) {
-    throw new Error(`Odesli API responded with status ${response.status}`);
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000);
+    const response = await fetch(`${baseUrl}?${queryParams.toString()}`, { signal: controller.signal }).catch(() => null);
+    clearTimeout(timeoutId);
+
+    if (!response || !response.ok) {
+      return null;
+    }
+    return await response.json().catch(() => null);
+  } catch {
+    return null;
   }
-  return response.json();
 }
 
 export interface NormalizedPlatform {
@@ -123,8 +135,7 @@ export async function fetchSongLinks(input: string): Promise<NormalizedSongLinks
   if (isUrl) {
     try {
       rawData = await queryOdesli({ url: trimmed });
-    } catch (err) {
-      console.error('Error fetching Songlink by URL:', err);
+    } catch {
       return null;
     }
   } else {
@@ -132,11 +143,10 @@ export async function fetchSongLinks(input: string): Promise<NormalizedSongLinks
     if (/^\d+$/.test(trimmed)) {
       try {
         rawData = await queryOdesli({ platform: 'appleMusic', type: 'song', id: trimmed });
-      } catch (err) {
+      } catch {
         try {
           rawData = await queryOdesli({ platform: 'appleMusic', type: 'album', id: trimmed });
-        } catch (err2) {
-          console.error('Error fetching Songlink by Apple Music ID:', err2);
+        } catch {
           return null;
         }
       }
@@ -144,16 +154,14 @@ export async function fetchSongLinks(input: string): Promise<NormalizedSongLinks
       // 22-character base62 is Spotify Track or Album ID
       try {
         rawData = await queryOdesli({ platform: 'spotify', type: 'song', id: trimmed });
-      } catch (err) {
+      } catch {
         try {
           rawData = await queryOdesli({ platform: 'spotify', type: 'album', id: trimmed });
-        } catch (err2) {
-          console.error('Error fetching Songlink by Spotify ID:', err2);
+        } catch {
           return null;
         }
       }
     } else {
-      console.warn('Input format not recognized as URL or supported ID.');
       return null;
     }
   }

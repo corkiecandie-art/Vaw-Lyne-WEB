@@ -1,0 +1,17 @@
+{
+  "name": "Vaw Lyne | Official Website",
+  "short_name": "VAW LYNE",
+  "description": "Official Artist Website, Discography, Tickets, and Fan Club for Vaw Lyne.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#07060A",
+  "theme_color": "#FF4FA3",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

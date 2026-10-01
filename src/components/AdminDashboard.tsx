@@ -58,6 +58,7 @@ import {
 import { fetchSongLinks } from '../services/songlink';
 import { isFirebaseConfigured } from '../services/firebase/config';
 import FirebaseUploader from './FirebaseUploader';
+import WebIconPreview from './WebIconPreview';
 import { triggerServerAutoSync, enrichAndAddReleaseLink, fetchSyncStatus, SyncStatus } from '../services/clientSync';
 
 const DEFAULT_SETTINGS: Settings = {
@@ -2410,6 +2411,9 @@ export default function AdminDashboard({ onNavigate }: AdminDashboardProps) {
                 </div>
               </div>
             </div>
+
+            {/* Web App Icon & Mobile Shortcut Visualizer */}
+            <WebIconPreview />
           </div>
         )}
 

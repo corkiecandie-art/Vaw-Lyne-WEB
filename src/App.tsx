@@ -31,6 +31,8 @@ import AdminDashboard from './components/AdminDashboard';
 import ProtectedRoute from './components/ProtectedRoute';
 import LoginPage from './pages/Login';
 import PrivacyPolicyModal from './components/PrivacyPolicyModal';
+import VinylStage3D from './components/VinylStage3D';
+import GeminiChatbot from './components/GeminiChatbot';
 
 /**
  * BoomerangVideo: Smooth forward-and-reverse video playback loop with no pause
@@ -320,6 +322,14 @@ export default function App() {
               Music
             </a>
             <a 
+              href="#studio-3d-stage" 
+              onClick={(e) => handleNavClick(e, 'studio-3d-stage')}
+              className="text-xs font-mono font-bold tracking-widest uppercase text-vaw-pink hover:text-white transition-colors flex items-center gap-1"
+            >
+              <Sparkles className="w-3 h-3 text-vaw-pink" />
+              3D Vinyl
+            </a>
+            <a 
               href="#smart-releases" 
               onClick={(e) => handleNavClick(e, 'smart-releases')}
               className="text-xs font-mono font-bold tracking-widest uppercase text-zinc-400 hover:text-vaw-pink transition-colors"
@@ -453,9 +463,17 @@ export default function App() {
                   Listen Inline Now
                 </button>
                 <a
+                  href="#studio-3d-stage"
+                  onClick={(e) => handleNavClick(e, 'studio-3d-stage')}
+                  className="flex items-center gap-1.5 px-5 py-3.5 rounded-xl bg-gradient-to-r from-purple-900/60 to-pink-900/60 hover:from-purple-800/80 hover:to-pink-800/80 border border-vaw-pink/40 text-white font-bold text-xs uppercase tracking-wider transition-all cursor-pointer backdrop-blur-sm shadow-lg shadow-purple-900/20"
+                >
+                  <Sparkles className="w-4 h-4 text-vaw-pink" />
+                  3D Vinyl Stage
+                </a>
+                <a
                   href="#ep-playlists"
                   onClick={(e) => handleNavClick(e, 'ep-playlists')}
-                  className="px-6 py-3.5 rounded-xl bg-zinc-900/80 hover:bg-zinc-800 border border-white/15 text-white font-bold text-xs uppercase tracking-wider transition-all cursor-pointer backdrop-blur-sm"
+                  className="px-5 py-3.5 rounded-xl bg-zinc-900/80 hover:bg-zinc-800 border border-white/15 text-white font-bold text-xs uppercase tracking-wider transition-all cursor-pointer backdrop-blur-sm"
                 >
                   EP Playlists
                 </a>
@@ -486,6 +504,32 @@ export default function App() {
                 </span>
               </div>
             </div>
+          </section>
+
+          {/* STUDIO EXPERIENCE: THREE.JS 3D PROCEDURAL VINYL & SOUNDWAVE STAGE */}
+          <section id="studio-3d-stage" className="space-y-6 pt-4">
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-white/10 pb-4">
+              <div>
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-vaw-pink/10 border border-vaw-pink/30 text-rose-mist text-xs font-mono font-medium mb-2">
+                  <Sparkles className="w-3.5 h-3.5 text-vaw-pink" />
+                  THREE.JS STUDIO CRAFT • PROCEDURAL 3D
+                </div>
+                <h2 className="text-3xl sm:text-4xl font-display font-extrabold text-white tracking-tight">
+                  AUDIOPHILE <span className="text-transparent bg-clip-text bg-gradient-to-r from-vaw-pink via-rose-mist to-lavender-aura">TURNTABLE STAGE</span>
+                </h2>
+                <p className="text-zinc-400 text-xs sm:text-sm mt-1 max-w-xl font-sans">
+                  Inspect the physical vinyl pressing of <strong>Love &amp; Lies</strong>. Orbit in 3D, switch between 4 luxury chassis finishes, test 33/45 RPM motor torque, and trigger real-time exploded layer inspection.
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <span className="text-[11px] font-mono text-zinc-400 bg-zinc-900/80 px-3 py-1.5 rounded-xl border border-white/10">
+                  PBR ACES Filmic • 60 FPS
+                </span>
+              </div>
+            </div>
+
+            <VinylStage3D />
           </section>
 
           {/* 1. MUSIC ARCHIVE SINGLES GRID */}
@@ -648,6 +692,9 @@ export default function App() {
         isOpen={isPrivacyModalOpen}
         onClose={() => setIsPrivacyModalOpen(false)}
       />
+
+      {/* Vaw Lyne Sound Lab Gemini Multi-Turn Chatbot with Google Search Grounding */}
+      <GeminiChatbot />
     </div>
   );
 }

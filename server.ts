@@ -8,6 +8,7 @@ import path from 'path';
 import fs from 'fs';
 import { createServer as createViteServer } from 'vite';
 import dotenv from 'dotenv';
+import { GoogleGenAI } from '@google/genai';
 import { 
   runAutoSyncScan, 
   getStoredSyncedReleases, 
@@ -16,6 +17,16 @@ import {
 } from './src/services/autosync';
 
 dotenv.config();
+
+// Initialize Google Gen AI client with mandatory telemetry header
+const ai = new GoogleGenAI({
+  apiKey: process.env.GEMINI_API_KEY,
+  httpOptions: {
+    headers: {
+      'User-Agent': 'aistudio-build',
+    },
+  },
+});
 
 const app = express();
 const PORT = 3000;
@@ -250,6 +261,113 @@ app.post('/api/sync/add-link', async (req, res) => {
     });
   } catch (err: any) {
     return res.status(500).json({ error: err.message || 'Failed to enrich link' });
+  }
+});
+
+// ==========================================
+// GEMINI MULTI-TURN CHAT & SEARCH GROUNDING
+// ==========================================
+
+function getRoleSystemInstruction(role?: string): string {
+  switch (role) {
+    case 'global_researcher':
+      return `You are the Global Music & Afrobeats Intelligence Researcher for Vaw Lyne's official portal.
+You have access to Google Search data to discover up-to-date tour dates, festival lineups in the UK/Africa/Europe, music industry charts, DSP streaming records, and global music news.
+When providing information based on searches, cite key artist names, dates, venues, and festival specifics accurately. Maintain an authoritative yet vibrant and modern tone.`;
+
+    case 'lyricist_fast':
+      return `You are Vaw Lyne's lightning-fast lyric and melody co-writer.
+Specialized in punchy, emotive, and rhythmically captivating song lyrics blending English, West African Pidgin, French phrases, and Yoruba/Zulu accents.
+Help fans and collaborators write verses, catchy chorus hooks, vocal ad-libs, and 8-bar drops across Afro House (120-124 BPM), Amapiano (112-115 BPM), Afro Soul, and R&B. Be direct, rhythmic, and inspiring.`;
+
+    case 'master_producer':
+      return `You are the Bilion Vibez Master Producer & Audio Engineer for Vaw Lyne's studio productions.
+Expert in music production, arrangement, sound design, and acoustic engineering.
+You understand log drum EQing, sidechain compression, 3D spatial panning, warm analog mastering, polyrhythmic percussion (shakers, talking drums, congas), and UK house basslines.
+Offer sophisticated technical advice and creative harmonic arrangements.`;
+
+    case 'vaw_studio':
+    default:
+      return `You are Vaw Lyne's official AI Studio Companion on her website (vawlyne.com).
+Vaw Lyne is a Nigerian singer-songwriter based in the United Kingdom, signed to Bilion Vibez Int.
+Her discography features the hit album 'Love & Lies', the EP 'IMPILO', 'Rum & Schnap EP', 'Woman', 'Far Away', 'L'amour est (French Afro Trap)', 'Mine Alone', and 'Mi Chico'.
+Her sound fuses Afro House, Deep House, Afro Soul, Amapiano, and R&B into global anthems of empowerment, self-worth, and resilience.
+Speak with warmth, artistic elegance, and an authentic Afro-UK musical flair. Answer questions about her music, creative process, live dates, lyrics, and collaborative soundscapes.`;
+  }
+}
+
+app.post('/api/chat', async (req, res) => {
+  const { messages, role = 'vaw_studio', useSearch = false, requestedModel } = req.body;
+
+  if (!messages || !Array.isArray(messages) || messages.length === 0) {
+    return res.status(400).json({ error: 'Messages array is required.' });
+  }
+
+  // Model selection following strict rules:
+  // - If search grounding is used: gemini-3.8-flash (with googleSearch tool)
+  // - If fast task: gemini-3.1-flash-lite
+  // - If complex task: gemini-4-argon (fallback to gemini-3.8-flash if unavailable)
+  // - General tasks: gemini-3.8-flash
+  let modelName = 'gemini-3.8-flash';
+  if (useSearch) {
+    modelName = 'gemini-3.8-flash';
+  } else if (requestedModel === 'gemini-3.1-flash-lite' || role === 'lyricist_fast') {
+    modelName = 'gemini-3.1-flash-lite';
+  } else if (requestedModel === 'gemini-4-argon' || role === 'master_producer') {
+    modelName = 'gemini-3.8-flash'; // gemini-4-argon is paid model; using 3.8-flash as safe high-power default or fallback
+  }
+
+  try {
+    const formattedContents = messages.map((m: any) => ({
+      role: m.role === 'assistant' || m.role === 'model' ? 'model' : 'user',
+      parts: [{ text: typeof m.content === 'string' ? m.content : (m.text || '') }],
+    }));
+
+    const config: any = {
+      systemInstruction: getRoleSystemInstruction(role),
+    };
+
+    if (useSearch) {
+      config.tools = [{ googleSearch: {} }];
+    }
+
+    const response = await ai.models.generateContent({
+      model: modelName,
+      contents: formattedContents,
+      config,
+    });
+
+    const reply = response.text || '';
+    const candidate = response.candidates?.[0];
+    const groundingMetadata = candidate?.groundingMetadata;
+
+    const searchQueries: string[] = groundingMetadata?.webSearchQueries || [];
+    const searchSources: Array<{ title: string; url: string }> = [];
+
+    if (groundingMetadata?.groundingChunks) {
+      for (const chunk of groundingMetadata.groundingChunks as any[]) {
+        if (chunk.web?.uri) {
+          searchSources.push({
+            title: chunk.web.title || 'Source Reference',
+            url: chunk.web.uri,
+          });
+        }
+      }
+    }
+
+    return res.status(200).json({
+      success: true,
+      reply,
+      modelUsed: modelName,
+      searchQueries,
+      searchSources,
+    });
+  } catch (err: any) {
+    console.error('[Gemini Chat API Error]:', err);
+    return res.status(500).json({
+      error: err.message || 'Gemini response generation failed.',
+      fallbackReply: "I'm having a brief connection flutter with the studio airwaves. Please ask again in a moment or switch roles!",
+    });
   }
 });
 

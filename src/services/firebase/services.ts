@@ -122,8 +122,8 @@ const initialTourEvents: TourEvent[] = [
 const initialGallery: GalleryImage[] = [
   {
     id: 'g1',
-    url: 'https://res.cloudinary.com/ax8kt8pw/image/upload/v1786442216/Woman_with_braids_facing_camera_202607260106_vnvhe3.jpg',
-    title: 'Studio Portrait (Braids & Camera)',
+    url: '/images/press-01-hero.jpg',
+    title: 'Studio Portrait (Press 2026 & Camera)',
     description: 'Official artist collection shoot in London',
     category: 'photoshoots',
     order: 0,
@@ -131,8 +131,8 @@ const initialGallery: GalleryImage[] = [
   },
   {
     id: 'g2',
-    url: 'https://res.cloudinary.com/ax8kt8pw/image/upload/v1786442214/Woman_with_braids_facing_camera_202607260106_1_cmug5m.jpg',
-    title: 'Vaw Lyne Braids Portrait Shoot',
+    url: '/images/press-02-stage.jpg',
+    title: 'Vaw Lyne Press 2026 Portrait Shoot',
     description: 'Editorial press photo for Love & Lies era',
     category: 'photoshoots',
     order: 1,
@@ -140,7 +140,7 @@ const initialGallery: GalleryImage[] = [
   },
   {
     id: 'g3',
-    url: 'https://res.cloudinary.com/ax8kt8pw/image/upload/v1786442213/Woman_with_braids_facing_camera_202607260105_donnhk.jpg',
+    url: '/images/press-03-urban.jpg',
     title: 'Vaw Lyne Editorial Close-Up',
     description: 'High-definition portrait shoot from the official gallery collection',
     category: 'photoshoots',
@@ -149,7 +149,7 @@ const initialGallery: GalleryImage[] = [
   },
   {
     id: 'g4',
-    url: 'https://res.cloudinary.com/ax8kt8pw/image/upload/v1786442203/no_texts_2K_202607252254_2_jqixtz.jpg',
+    url: '/images/press-04-golden.jpg',
     title: 'Vaw Lyne 2K Studio Master',
     description: 'Official 2K high-resolution studio photography',
     category: 'photoshoots',
@@ -158,7 +158,7 @@ const initialGallery: GalleryImage[] = [
   },
   {
     id: 'g5',
-    url: 'https://res.cloudinary.com/ax8kt8pw/image/upload/v1786442201/close_up_202607281438_meb8sa.jpg',
+    url: '/images/press-05-square.jpg',
     title: 'Vaw Lyne Portrait Close-Up',
     description: 'Acoustic & Soul expression portrait',
     category: 'photoshoots',
@@ -167,7 +167,7 @@ const initialGallery: GalleryImage[] = [
   },
   {
     id: 'g6',
-    url: 'https://res.cloudinary.com/ax8kt8pw/image/upload/v1786442201/White_plane_background_studio_202607281540_jjsnhq.jpg',
+    url: '/images/press-01-hero.jpg',
     title: 'Studio White Backdrop Shoot',
     description: 'Minimalist studio photography session',
     category: 'photoshoots',
@@ -176,7 +176,7 @@ const initialGallery: GalleryImage[] = [
   },
   {
     id: 'g7',
-    url: 'https://res.cloudinary.com/ax8kt8pw/image/upload/v1784618919/image-1784436581458_no4axg.png',
+    url: '/images/press-02-stage.jpg',
     title: 'Vaw Lyne Iconic Artist Portrait',
     description: 'Signature artist photo for Afro House & Soul dispatches',
     category: 'photoshoots',
@@ -185,7 +185,7 @@ const initialGallery: GalleryImage[] = [
   },
   {
     id: 'g8',
-    url: 'https://res.cloudinary.com/ax8kt8pw/image/upload/v1784618933/ChatGPT_Image_Jul_20_2026_05_24_46_AM_p81bg1.png',
+    url: '/images/press-03-urban.jpg',
     title: 'Live Stage Performance',
     description: 'Performing live for Afro House & Afro Soul fans in the UK',
     category: 'stage',
@@ -230,7 +230,7 @@ const initialArtists: Artist[] = [{
   id: 'vaw_lyne',
   name: 'Vaw Lyne',
   biography: 'Nigerian singer-songwriter based in the United Kingdom. Fusing Afro House, Deep House, Afro Soul, Amapiano, and R&B into global story-driven anthems of empowerment, love, and growth.',
-  photoUrl: 'https://res.cloudinary.com/ax8kt8pw/image/upload/v1784618919/image-1784436581458_no4axg.png',
+  photoUrl: '/images/press-02-stage.jpg',
   socialLinks: {
     spotify: 'https://open.spotify.com/artist/20HDRtBizjUi4z4KiiMq0n',
     appleMusic: 'https://music.apple.com/mw/artist/vaw-lyne/1892158941',
@@ -573,7 +573,7 @@ export function uploadFile(
             resultUrl = 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=800';
           } else {
             // General premium backdrop
-            resultUrl = 'https://res.cloudinary.com/ax8kt8pw/image/upload/v1784618919/image-1784436581458_no4axg.png';
+            resultUrl = '/images/press-02-stage.jpg';
           }
 
           onProgress(100, resultUrl);

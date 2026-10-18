@@ -164,7 +164,7 @@ export const PLAYLISTS: Playlist[] = [
     description: 'An emotional roller-coaster detailing love, heartbreak, growth, and empowerment. Heartfelt songwriting meets lush, soulful melodies.',
     tracksCount: 5,
     genre: 'Afro Soul / R&B / Afro-pop',
-    coverImage: 'https://res.cloudinary.com/ax8kt8pw/image/upload/v1784618919/image-1784436581458_no4axg.png'
+    coverImage: '/images/press-01-hero.jpg'
   }
 ];
 

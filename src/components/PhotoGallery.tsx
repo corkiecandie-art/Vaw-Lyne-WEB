@@ -18,8 +18,8 @@ export default function PhotoGallery() {
   const defaultPhotos: GalleryImage[] = useMemo(() => [
     {
       id: 'g1',
-      url: 'https://res.cloudinary.com/ax8kt8pw/image/upload/v1786442216/Woman_with_braids_facing_camera_202607260106_vnvhe3.jpg',
-      title: 'Studio Portrait (Braids & Camera)',
+      url: '/images/press-01-hero.jpg',
+      title: 'Studio Portrait (Press 2026 & Camera)',
       description: 'Official artist collection shoot in London',
       category: 'photoshoots',
       order: 0,
@@ -27,8 +27,8 @@ export default function PhotoGallery() {
     },
     {
       id: 'g2',
-      url: 'https://res.cloudinary.com/ax8kt8pw/image/upload/v1786442214/Woman_with_braids_facing_camera_202607260106_1_cmug5m.jpg',
-      title: 'Vaw Lyne Braids Portrait Shoot',
+      url: '/images/press-02-stage.jpg',
+      title: 'Vaw Lyne Press 2026 Portrait Shoot',
       description: 'Editorial press photo for Love & Lies era',
       category: 'photoshoots',
       order: 1,
@@ -36,7 +36,7 @@ export default function PhotoGallery() {
     },
     {
       id: 'g3',
-      url: 'https://res.cloudinary.com/ax8kt8pw/image/upload/v1786442213/Woman_with_braids_facing_camera_202607260105_donnhk.jpg',
+      url: '/images/press-03-urban.jpg',
       title: 'Vaw Lyne Editorial Close-Up',
       description: 'High-definition portrait shoot from the official gallery collection',
       category: 'photoshoots',
@@ -45,7 +45,7 @@ export default function PhotoGallery() {
     },
     {
       id: 'g4',
-      url: 'https://res.cloudinary.com/ax8kt8pw/image/upload/v1786442203/no_texts_2K_202607252254_2_jqixtz.jpg',
+      url: '/images/press-04-golden.jpg',
       title: 'Vaw Lyne 2K Studio Master',
       description: 'Official 2K high-resolution studio photography',
       category: 'photoshoots',
@@ -54,7 +54,7 @@ export default function PhotoGallery() {
     },
     {
       id: 'g5',
-      url: 'https://res.cloudinary.com/ax8kt8pw/image/upload/v1786442201/close_up_202607281438_meb8sa.jpg',
+      url: '/images/press-05-square.jpg',
       title: 'Vaw Lyne Portrait Close-Up',
       description: 'Acoustic & Soul expression portrait',
       category: 'photoshoots',
@@ -63,7 +63,7 @@ export default function PhotoGallery() {
     },
     {
       id: 'g6',
-      url: 'https://res.cloudinary.com/ax8kt8pw/image/upload/v1786442201/White_plane_background_studio_202607281540_jjsnhq.jpg',
+      url: '/images/press-01-hero.jpg',
       title: 'Studio White Backdrop Shoot',
       description: 'Minimalist studio photography session',
       category: 'photoshoots',
@@ -72,7 +72,7 @@ export default function PhotoGallery() {
     },
     {
       id: 'g7',
-      url: 'https://res.cloudinary.com/ax8kt8pw/image/upload/v1784618919/image-1784436581458_no4axg.png',
+      url: '/images/press-02-stage.jpg',
       title: 'Vaw Lyne Iconic Artist Portrait',
       description: 'Signature artist photo for Afro House & Soul dispatches',
       category: 'photoshoots',
@@ -81,7 +81,7 @@ export default function PhotoGallery() {
     },
     {
       id: 'g8',
-      url: 'https://res.cloudinary.com/ax8kt8pw/image/upload/v1784618933/ChatGPT_Image_Jul_20_2026_05_24_46_AM_p81bg1.png',
+      url: '/images/press-03-urban.jpg',
       title: 'Live Stage Performance',
       description: 'Performing live for Afro House & Afro Soul fans in the UK',
       category: 'stage',

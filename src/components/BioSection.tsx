@@ -84,7 +84,7 @@ export default function BioSection() {
             {/* Premium Press Photograph Banner */}
             <div className="my-6 relative aspect-video sm:aspect-[21/9] rounded-2xl overflow-hidden border border-white/5 bg-zinc-950 group">
               <img
-                src="https://res.cloudinary.com/ax8kt8pw/image/upload/v1784618919/image-1784436581458_no4axg.png"
+                src="/images/press-01-hero.jpg"
                 alt="Vaw Lyne widescreen press photograph"
                 className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-700"
                 referrerPolicy="no-referrer"

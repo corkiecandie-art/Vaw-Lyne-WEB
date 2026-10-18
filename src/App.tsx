@@ -427,7 +427,7 @@ export default function App() {
             <div className="absolute inset-0 z-0 overflow-hidden bg-black pointer-events-none select-none">
               <BoomerangVideo
                 src="https://res.cloudinary.com/ax8kt8pw/video/upload/f_mp4,q_auto,w_1280/v1786441981/She_smiles_to_camera_1080p_202608031433_v33rmu.mp4"
-                poster="https://res.cloudinary.com/ax8kt8pw/image/upload/v1786442214/Woman_with_braids_facing_camera_202607260106_1_cmug5m.jpg"
+                poster="/images/press-02-stage.jpg"
               />
 
               {/* Smooth gradient overlay for optimum text legibility */}
@@ -485,7 +485,7 @@ export default function App() {
               <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/80 z-10 pointer-events-none" />
               <div className="relative aspect-[4/5] rounded-2xl overflow-hidden bg-zinc-950">
                 <img
-                  src="https://res.cloudinary.com/ax8kt8pw/image/upload/v1786442214/Woman_with_braids_facing_camera_202607260106_1_cmug5m.jpg"
+                  src="/images/press-04-golden.jpg"
                   alt="Vaw Lyne portrait"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none select-none"
                   referrerPolicy="no-referrer"

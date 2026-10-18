@@ -158,7 +158,7 @@ const initialGallery: GalleryImage[] = [
   },
   {
     id: 'g5',
-    url: '/images/press-05-square.jpg',
+    url: '/images/press-06-rose.jpg',
     title: 'Vaw Lyne Portrait Close-Up',
     description: 'Acoustic & Soul expression portrait',
     category: 'photoshoots',
@@ -167,7 +167,7 @@ const initialGallery: GalleryImage[] = [
   },
   {
     id: 'g6',
-    url: '/images/press-01-hero.jpg',
+    url: '/images/press-07-scarf.jpg',
     title: 'Studio White Backdrop Shoot',
     description: 'Minimalist studio photography session',
     category: 'photoshoots',
@@ -176,7 +176,7 @@ const initialGallery: GalleryImage[] = [
   },
   {
     id: 'g7',
-    url: '/images/press-02-stage.jpg',
+    url: '/images/press-08-bw.jpg',
     title: 'Vaw Lyne Iconic Artist Portrait',
     description: 'Signature artist photo for Afro House & Soul dispatches',
     category: 'photoshoots',
@@ -185,7 +185,7 @@ const initialGallery: GalleryImage[] = [
   },
   {
     id: 'g8',
-    url: '/images/press-03-urban.jpg',
+    url: '/images/press-09-selfie.jpg',
     title: 'Live Stage Performance',
     description: 'Performing live for Afro House & Afro Soul fans in the UK',
     category: 'stage',
@@ -230,7 +230,7 @@ const initialArtists: Artist[] = [{
   id: 'vaw_lyne',
   name: 'Vaw Lyne',
   biography: 'Nigerian singer-songwriter based in the United Kingdom. Fusing Afro House, Deep House, Afro Soul, Amapiano, and R&B into global story-driven anthems of empowerment, love, and growth.',
-  photoUrl: '/images/press-02-stage.jpg',
+  photoUrl: '/images/press-01-hero.jpg',
   socialLinks: {
     spotify: 'https://open.spotify.com/artist/20HDRtBizjUi4z4KiiMq0n',
     appleMusic: 'https://music.apple.com/mw/artist/vaw-lyne/1892158941',
@@ -573,7 +573,7 @@ export function uploadFile(
             resultUrl = 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=800';
           } else {
             // General premium backdrop
-            resultUrl = '/images/press-02-stage.jpg';
+            resultUrl = '/images/press-05-square.jpg';
           }
 
           onProgress(100, resultUrl);

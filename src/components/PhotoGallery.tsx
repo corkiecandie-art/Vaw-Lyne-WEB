@@ -54,7 +54,7 @@ export default function PhotoGallery() {
     },
     {
       id: 'g5',
-      url: '/images/press-05-square.jpg',
+      url: '/images/press-06-rose.jpg',
       title: 'Vaw Lyne Portrait Close-Up',
       description: 'Acoustic & Soul expression portrait',
       category: 'photoshoots',
@@ -63,7 +63,7 @@ export default function PhotoGallery() {
     },
     {
       id: 'g6',
-      url: '/images/press-01-hero.jpg',
+      url: '/images/press-07-scarf.jpg',
       title: 'Studio White Backdrop Shoot',
       description: 'Minimalist studio photography session',
       category: 'photoshoots',
@@ -72,7 +72,7 @@ export default function PhotoGallery() {
     },
     {
       id: 'g7',
-      url: '/images/press-02-stage.jpg',
+      url: '/images/press-08-bw.jpg',
       title: 'Vaw Lyne Iconic Artist Portrait',
       description: 'Signature artist photo for Afro House & Soul dispatches',
       category: 'photoshoots',
@@ -81,7 +81,7 @@ export default function PhotoGallery() {
     },
     {
       id: 'g8',
-      url: '/images/press-03-urban.jpg',
+      url: '/images/press-09-selfie.jpg',
       title: 'Live Stage Performance',
       description: 'Performing live for Afro House & Afro Soul fans in the UK',
       category: 'stage',

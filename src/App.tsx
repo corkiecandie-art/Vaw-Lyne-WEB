@@ -485,7 +485,7 @@ export default function App() {
               <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/80 z-10 pointer-events-none" />
               <div className="relative aspect-[4/5] rounded-2xl overflow-hidden bg-zinc-950">
                 <img
-                  src="/images/press-04-golden.jpg"
+                  src="/images/press-06-rose.jpg"
                   alt="Vaw Lyne portrait"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none select-none"
                   referrerPolicy="no-referrer"

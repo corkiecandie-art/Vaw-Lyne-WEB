@@ -81,7 +81,7 @@ export default function PhotoGallery() {
     },
     {
       id: 'g8',
-      url: '/images/press-09-selfie.jpg',
+      url: '/images/press-05-square.jpg',
       title: 'Live Stage Performance',
       description: 'Performing live for Afro House & Afro Soul fans in the UK',
       category: 'stage',

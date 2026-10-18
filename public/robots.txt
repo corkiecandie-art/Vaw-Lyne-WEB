@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://vawlyne.web.app/sitemap.xml

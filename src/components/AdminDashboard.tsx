@@ -2741,7 +2741,7 @@ export default function AdminDashboard({ onNavigate }: AdminDashboardProps) {
                     <Sparkles className="w-4 h-4 animate-pulse" />
                   </div>
                   <div>
-                    <h3 className="text-sm font-display font-extrabold text-white uppercase tracking-wider">AI Autonomous Metrics Tracking</h3>
+                    <h3 className="text-sm font-display font-extrabold text-white uppercase tracking-wider">Telemetry</h3>
                     <p className="text-[10px] font-mono text-zinc-400">Automated DSP telemetry &amp; live Firestore data listeners</p>
                   </div>
                 </div>
@@ -2758,7 +2758,7 @@ export default function AdminDashboard({ onNavigate }: AdminDashboardProps) {
                       <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
                     </span>
                     <div>
-                      <span className="text-xs font-mono font-bold text-emerald-400 uppercase block">AI Autonomous Tracking: ACTIVE</span>
+                      <span className="text-xs font-mono font-bold text-emerald-400 uppercase block">Telemetry: ACTIVE</span>
                       <span className="text-[10px] text-zinc-400 font-mono">Manual override disabled to protect telemetry accuracy.</span>
                     </div>
                   </div>
@@ -2794,14 +2794,13 @@ export default function AdminDashboard({ onNavigate }: AdminDashboardProps) {
                 </div>
 
                 <p className="text-[11px] text-zinc-400 leading-relaxed bg-zinc-900/60 p-3 rounded-xl border border-white/5 font-mono">
-                  ⚡ All metrics are computed dynamically by the AI Autonomous Tracking Engine from real database entries and DSP link interactions.
-                </p>
+                                  </p>
 
                 <div className="pt-3 border-t border-white/5 flex items-center justify-between gap-3">
                   <button
                     type="button"
                     onClick={async () => {
-                      triggerToast('AI Autonomous Telemetry Sync complete.');
+                      triggerToast('Telemetry.');
                       await handleGlobalDatabaseRefetch();
                     }}
                     className="px-4 py-2.5 rounded-xl bg-vaw-pink/15 hover:bg-vaw-pink/25 border border-vaw-pink/30 text-vaw-pink text-xs font-mono font-bold uppercase cursor-pointer transition-all flex items-center gap-1.5"

@@ -267,7 +267,7 @@ export default function Tour() {
             <span>Official ticketing verified by BNVZ / BILION VIBEZ INT.</span>
           </div>
           <div className="flex items-center gap-4 text-zinc-500 font-mono text-[10px]">
-            <span>ARTIST ID: id_15656360</span>
+            
             <span>POWERED BY BANDSINTOWN</span>
           </div>
         </div>

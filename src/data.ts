@@ -11,7 +11,7 @@ export const TRACKS: Track[] = [
     title: "L'amour est (French Afro Trap)",
     category: 'single',
     releaseYear: '2026',
-    description: "Vaw Lyne's breakthrough single blending deep French lyricism with heavy Afro Trap beats.",
+    description: "",
     genre: 'Afro-pop',
     duration: '3:23'
   },
@@ -20,7 +20,7 @@ export const TRACKS: Track[] = [
     title: 'MY BODY (with Tems & Ayra Starr)',
     category: 'single',
     releaseYear: '2026',
-    description: 'A powerful soulful collaboration celebrating body positivity, confidence, and sisterhood.',
+    description: '',
     genre: 'Afro Soul',
     duration: '3:37'
   },
@@ -29,7 +29,7 @@ export const TRACKS: Track[] = [
     title: 'GINGER ME (with Ayra Starr)',
     category: 'single',
     releaseYear: '2026',
-    description: 'A sultry, melodic groove fusing sweet vocals and hypnotic percussive vibes.',
+    description: '',
     genre: 'Afro Soul',
     duration: '4:43'
   },
@@ -38,7 +38,7 @@ export const TRACKS: Track[] = [
     title: 'ME NEED A MAN (with Tyla, Shenseea, Bil!on Vibez ft. Ayra Starr)',
     category: 'single',
     releaseYear: '2026',
-    description: 'An energetic, superstar crossover anthem blending modern R&B, dancehall, and Afro-fusion.',
+    description: '',
     genre: 'R&B',
     duration: '2:55'
   },
@@ -47,7 +47,7 @@ export const TRACKS: Track[] = [
     title: 'Woman (with Bil!on Vibez)',
     category: 'single',
     releaseYear: '2026',
-    description: 'An empowering club banger celebrating the resilience, beauty, and strength of women worldwide.',
+    description: '',
     genre: 'Afro House',
     duration: '3:09'
   },
@@ -56,7 +56,7 @@ export const TRACKS: Track[] = [
     title: 'No Trouble',
     category: 'single',
     releaseYear: '2026',
-    description: 'Driving Amapiano log drums and deep house syncopations that command the dancefloor.',
+    description: '',
     genre: 'Afro House',
     duration: '3:38'
   },
@@ -65,7 +65,7 @@ export const TRACKS: Track[] = [
     title: 'WOMAN (with Tyla, Ayra Starr, Rihanna & Aya Nakamura)',
     category: 'single',
     releaseYear: '2026',
-    description: 'A global mega-remix featuring top tier powerhouses, blending Afro House syncopation with ultimate pop elegance.',
+    description: '',
     genre: 'Afro House',
     duration: '2:43'
   },
@@ -74,7 +74,7 @@ export const TRACKS: Track[] = [
     title: 'WOMAN (Visualizer)',
     category: 'visualizer',
     releaseYear: '2026',
-    description: 'Official aesthetic visualizer for the blockbuster collaboration of WOMAN.',
+    description: '',
     genre: 'Afro House',
     duration: '3:38'
   },
@@ -83,7 +83,7 @@ export const TRACKS: Track[] = [
     title: "Don't Hide It (with Bil!on Vibez)",
     category: 'single',
     releaseYear: '2026',
-    description: 'A high-vibe rhythm showcasing the perfect synergy of driving Afro beats and beautiful songwriting.',
+    description: '',
     genre: 'Afro House',
     duration: '3:09'
   },
@@ -92,7 +92,7 @@ export const TRACKS: Track[] = [
     title: 'Far Away',
     category: 'release',
     releaseYear: '2026',
-    description: 'A beautiful deep house track featuring soulful vocals and deep tribal textures.',
+    description: '',
     genre: 'Deep House',
     duration: '3:04'
   },
@@ -101,7 +101,7 @@ export const TRACKS: Track[] = [
     title: 'Mine Alone',
     category: 'release',
     releaseYear: '2026',
-    description: 'Vulnerable acoustic melodies and heartfelt vocals on love and long-distance connection.',
+    description: '',
     genre: 'Afro Soul',
     duration: '3:18'
   },
@@ -110,7 +110,7 @@ export const TRACKS: Track[] = [
     title: "L'amour est (Acoustic Version)",
     category: 'release',
     releaseYear: '2026',
-    description: "A beautiful, stripped-down acoustic performance of her signature hit 'L'amour est'.",
+    description: "",
     genre: 'Afro Soul',
     duration: '3:50'
   },
@@ -119,7 +119,7 @@ export const TRACKS: Track[] = [
     title: 'Mi Chico (Afro Deep House, EDM)',
     category: 'release',
     releaseYear: '2026',
-    description: 'A high-energy European dancefloor crossover featuring rich deep house and EDM beats.',
+    description: '',
     genre: 'Deep House',
     duration: '3:12'
   },
@@ -128,7 +128,7 @@ export const TRACKS: Track[] = [
     title: 'Woman (Alternate Version)',
     category: 'release',
     releaseYear: '2026',
-    description: 'An alternate club mix emphasizing the deep electronic logging rhythms.',
+    description: '',
     genre: 'Afro House',
     duration: '3:45'
   },
@@ -137,7 +137,7 @@ export const TRACKS: Track[] = [
     title: 'ONLY',
     category: 'release',
     releaseYear: '2026',
-    description: 'An introspective anthem of self-discovery, backing harmonies, and percussion.',
+    description: '',
     genre: 'Afro Soul',
     duration: '3:20'
   }
@@ -150,7 +150,7 @@ export const PLAYLISTS: Playlist[] = [
     type: 'ep',
     releaseYear: '2026',
     embedUrl: 'https://www.youtube.com/embed/videoseries?si=YEmVBa8DJgB7bnPZ&list=PLxfArbcp8KM-8m-6KTaiHvQiLAtlLw1fw',
-    description: "A sultry blend of late-night vibes, rich syncopation, and smooth storytelling. Explore Vaw Lyne's deep Afro-fusion sensibilities.",
+    description: "",
     tracksCount: 6,
     genre: 'Afro House / Deep House / Amapiano',
     coverImage: 'https://i.audiomack.com/vaw-lyne/358669d77a.webp?width=1440'
@@ -161,7 +161,7 @@ export const PLAYLISTS: Playlist[] = [
     type: 'ep',
     releaseYear: '2026',
     embedUrl: 'https://www.youtube.com/embed/videoseries?si=UUv56Z6PV1NCEEBH&list=PLxfArbcp8KM-Z5cmxy--p692dALZga66y',
-    description: 'An emotional roller-coaster detailing love, heartbreak, growth, and empowerment. Heartfelt songwriting meets lush, soulful melodies.',
+    description: '',
     tracksCount: 5,
     genre: 'Afro Soul / R&B / Afro-pop',
     coverImage: '/images/press-01-hero.jpg'
@@ -237,24 +237,24 @@ export const GENRES = [
     name: 'Afro House',
     bpm: '120-124 BPM',
     vibe: 'Deep hypnotic syncopation, tribal rhythms, and dark electronic basslines.',
-    description: "Vaw Lyne drives her UK influence directly into deep syncopated Afro-house grooves, establishing a raw dancefloor atmosphere."
+    description: ""
   },
   {
     name: 'Amapiano',
     bpm: '111-115 BPM',
     vibe: 'Lush jazzy chords, airy synths, and the iconic, punchy log drum baseline.',
-    description: "Blending South Africa's finest export with her smooth Yoruba-influenced melodies, Vaw Lyne delivers stellar Amapiano anthems."
+    description: ""
   },
   {
     name: 'Afro Soul',
     bpm: '85-100 BPM',
     vibe: 'Vulnerability, rich acoustic instrumentation, and expressive storytelling vocals.',
-    description: "Her core artistic essence. This is where her storytelling shines, delivering honest accounts of heartbreak, self-worth, and love."
+    description: ""
   },
   {
     name: 'Deep House',
     bpm: '118-122 BPM',
     vibe: 'Warm chords, minimalist grooves, and deep underground club atmosphere.',
-    description: "Representing her London and UK setting, Vaw Lyne infuses classic deep house moods with African vocals and narrative."
+    description: ""
   }
 ];

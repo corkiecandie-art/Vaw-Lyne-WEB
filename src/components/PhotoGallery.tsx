@@ -16,105 +16,177 @@ export default function PhotoGallery() {
 
   // Fallback initial photos if collection is empty
   const defaultPhotos: GalleryImage[] = useMemo(() => [
-    {
-      id: 'g1',
-      url: '/images/press-01-hero.jpg',
-      title: 'Studio Portrait (Press 2026 & Camera)',
-      description: 'Official artist collection shoot in London',
-      category: 'photoshoots',
-      order: 0,
-      uploadedAt: new Date().toISOString()
-    },
-    {
-      id: 'g2',
-      url: '/images/press-02-stage.jpg',
-      title: 'Vaw Lyne Press 2026 Portrait Shoot',
-      description: 'Editorial press photo for Love & Lies era',
-      category: 'photoshoots',
-      order: 1,
-      uploadedAt: new Date().toISOString()
-    },
-    {
-      id: 'g3',
-      url: '/images/press-03-urban.jpg',
-      title: 'Vaw Lyne Editorial Close-Up',
-      description: 'High-definition portrait shoot from the official gallery collection',
-      category: 'photoshoots',
-      order: 2,
-      uploadedAt: new Date().toISOString()
-    },
-    {
-      id: 'g4',
-      url: '/images/press-04-golden.jpg',
-      title: 'Vaw Lyne 2K Studio Master',
-      description: 'Official 2K high-resolution studio photography',
-      category: 'photoshoots',
-      order: 3,
-      uploadedAt: new Date().toISOString()
-    },
-    {
-      id: 'g5',
-      url: '/images/press-06-rose.jpg',
-      title: 'Vaw Lyne Portrait Close-Up',
-      description: 'Acoustic & Soul expression portrait',
-      category: 'photoshoots',
-      order: 4,
-      uploadedAt: new Date().toISOString()
-    },
-    {
-      id: 'g6',
-      url: '/images/press-07-scarf.jpg',
-      title: 'Studio White Backdrop Shoot',
-      description: 'Minimalist studio photography session',
-      category: 'photoshoots',
-      order: 5,
-      uploadedAt: new Date().toISOString()
-    },
-    {
-      id: 'g7',
-      url: '/images/press-08-bw.jpg',
-      title: 'Vaw Lyne Iconic Artist Portrait',
-      description: 'Signature artist photo for Afro House & Soul dispatches',
-      category: 'photoshoots',
-      order: 6,
-      uploadedAt: new Date().toISOString()
-    },
-    {
-      id: 'g8',
-      url: '/images/press-05-square.jpg',
-      title: 'Live Stage Performance',
-      description: 'Performing live for Afro House & Afro Soul fans in the UK',
-      category: 'stage',
-      order: 7,
-      uploadedAt: new Date().toISOString()
-    },
-    {
-      id: 'g9',
-      url: 'https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/30/bc/2c/30bc2c9b-de93-dcf9-46fb-97a58c73cf2f/40058.jpg/1000x1000bb.jpg',
-      title: 'IMPILO Official Cover Shoot',
-      description: 'Official artwork photography for IMPILO EP',
-      category: 'covers',
-      order: 8,
-      uploadedAt: new Date().toISOString()
-    },
-    {
-      id: 'g10',
-      url: 'https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/04/a7/d5/04a7d5b4-9d5c-b1ac-55d9-b369b6a9e48d/698334065644.jpg/1000x1000bb.jpg',
-      title: 'Love & Lies Album Artwork',
-      description: 'High-resolution cover art photo for Love & Lies',
-      category: 'covers',
-      order: 9,
-      uploadedAt: new Date().toISOString()
-    },
-    {
-      id: 'g11',
-      url: 'https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/71/73/c4/7173c42f-8982-084d-edbe-2fa4483222ac/38099.jpg/1000x1000bb.jpg',
-      title: 'Far Away Cover Shoot',
-      description: 'Single cover photography featuring Bigboy Wrld',
-      category: 'covers',
-      order: 10,
-      uploadedAt: new Date().toISOString()
-    }
+  {
+    id: 'g01',
+    url: '/images/gallery/gal-01.jpg',
+    title: 'Vaw Lyne · 01',
+    description: '',
+    category: 'photoshoots',
+    order: 0,
+    uploadedAt: '2026-10-18T00:00:00.000Z'
+  },
+  {
+    id: 'g02',
+    url: '/images/gallery/gal-02.jpg',
+    title: 'Vaw Lyne · 02',
+    description: '',
+    category: 'photoshoots',
+    order: 1,
+    uploadedAt: '2026-10-18T00:00:00.000Z'
+  },
+  {
+    id: 'g03',
+    url: '/images/gallery/gal-03.jpg',
+    title: 'Vaw Lyne · 03',
+    description: '',
+    category: 'photoshoots',
+    order: 2,
+    uploadedAt: '2026-10-18T00:00:00.000Z'
+  },
+  {
+    id: 'g04',
+    url: '/images/gallery/gal-04.jpg',
+    title: 'Vaw Lyne · 04',
+    description: '',
+    category: 'photoshoots',
+    order: 3,
+    uploadedAt: '2026-10-18T00:00:00.000Z'
+  },
+  {
+    id: 'g05',
+    url: '/images/gallery/gal-05.jpg',
+    title: 'Vaw Lyne · 05',
+    description: '',
+    category: 'photoshoots',
+    order: 4,
+    uploadedAt: '2026-10-18T00:00:00.000Z'
+  },
+  {
+    id: 'g06',
+    url: '/images/gallery/gal-06.jpg',
+    title: 'Vaw Lyne · 06',
+    description: '',
+    category: 'photoshoots',
+    order: 5,
+    uploadedAt: '2026-10-18T00:00:00.000Z'
+  },
+  {
+    id: 'g07',
+    url: '/images/gallery/gal-07.jpg',
+    title: 'Vaw Lyne · 07',
+    description: '',
+    category: 'photoshoots',
+    order: 6,
+    uploadedAt: '2026-10-18T00:00:00.000Z'
+  },
+  {
+    id: 'g08',
+    url: '/images/gallery/gal-08.jpg',
+    title: 'Vaw Lyne · 08',
+    description: '',
+    category: 'photoshoots',
+    order: 7,
+    uploadedAt: '2026-10-18T00:00:00.000Z'
+  },
+  {
+    id: 'g09',
+    url: '/images/gallery/gal-09.jpg',
+    title: 'Vaw Lyne · 09',
+    description: '',
+    category: 'photoshoots',
+    order: 8,
+    uploadedAt: '2026-10-18T00:00:00.000Z'
+  },
+  {
+    id: 'g10',
+    url: '/images/gallery/gal-10.jpg',
+    title: 'Vaw Lyne · 10',
+    description: '',
+    category: 'photoshoots',
+    order: 9,
+    uploadedAt: '2026-10-18T00:00:00.000Z'
+  },
+  {
+    id: 'g11',
+    url: '/images/gallery/gal-11.jpg',
+    title: 'Vaw Lyne · 11',
+    description: '',
+    category: 'photoshoots',
+    order: 10,
+    uploadedAt: '2026-10-18T00:00:00.000Z'
+  },
+  {
+    id: 'g12',
+    url: '/images/gallery/gal-12.jpg',
+    title: 'Vaw Lyne · 12',
+    description: '',
+    category: 'photoshoots',
+    order: 11,
+    uploadedAt: '2026-10-18T00:00:00.000Z'
+  },
+  {
+    id: 'g13',
+    url: '/images/gallery/gal-13.jpg',
+    title: 'Vaw Lyne · 13',
+    description: '',
+    category: 'photoshoots',
+    order: 12,
+    uploadedAt: '2026-10-18T00:00:00.000Z'
+  },
+  {
+    id: 'g14',
+    url: '/images/gallery/gal-14.jpg',
+    title: 'Vaw Lyne · 14',
+    description: '',
+    category: 'photoshoots',
+    order: 13,
+    uploadedAt: '2026-10-18T00:00:00.000Z'
+  },
+  {
+    id: 'g15',
+    url: '/images/gallery/gal-15.jpg',
+    title: 'Vaw Lyne · 15',
+    description: '',
+    category: 'photoshoots',
+    order: 14,
+    uploadedAt: '2026-10-18T00:00:00.000Z'
+  },
+  {
+    id: 'g16',
+    url: '/images/gallery/gal-16.jpg',
+    title: 'Vaw Lyne · 16',
+    description: '',
+    category: 'photoshoots',
+    order: 15,
+    uploadedAt: '2026-10-18T00:00:00.000Z'
+  },
+  {
+    id: 'g17',
+    url: '/images/gallery/gal-17.jpg',
+    title: 'Vaw Lyne · 17',
+    description: '',
+    category: 'photoshoots',
+    order: 16,
+    uploadedAt: '2026-10-18T00:00:00.000Z'
+  },
+  {
+    id: 'g18',
+    url: '/images/gallery/gal-18.jpg',
+    title: 'Vaw Lyne · 18',
+    description: '',
+    category: 'photoshoots',
+    order: 17,
+    uploadedAt: '2026-10-18T00:00:00.000Z'
+  },
+  {
+    id: 'g19',
+    url: '/images/gallery/gal-19.jpg',
+    title: 'Vaw Lyne · 19',
+    description: '',
+    category: 'photoshoots',
+    order: 18,
+    uploadedAt: '2026-10-18T00:00:00.000Z'
+  }
   ], []);
 
   const photos = (galleryItems && galleryItems.length > 0) ? galleryItems : defaultPhotos;
